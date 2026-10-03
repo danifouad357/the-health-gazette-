@@ -1,0 +1,56 @@
+---
+/*
+ * =============================================================================
+ * EKG HEARTBEAT FLOURISH — The Health Gazette
+ * =============================================================================
+ * The signature decorative element. A horizontal line with heartbeat-monitor
+ * peaks that visually connects "health" + "editorial."
+ *
+ * Used in: Masthead (ink color), Footer (red color)
+ *
+ * USAGE:
+ *   <EKGFlourish />                          <!-- default: ink, 120px -->
+ *   <EKGFlourish color="red" width="80" />    <!-- red, 80px -->
+ *   <EKGFlourish color="currentColor" />      <!-- inherits from parent -->
+ * =============================================================================
+ */
+
+interface Props {
+  /** Color of the flourish line. Defaults to ink. */
+  color?: string;
+  /** Width in pixels. Defaults to 120. */
+  width?: number;
+  /** Stroke width. Defaults to 1.5. */
+  stroke?: number;
+}
+
+const {
+  color = 'var(--thg-color-ink)',
+  width = 120,
+  stroke = 1.5
+} = Astro.props;
+---
+
+<svg
+  class="ekg-flourish"
+  width={width}
+  height="24"
+  viewBox="0 0 120 24"
+  fill="none"
+  xmlns="http://www.w3.org/2000/svg"
+  aria-hidden="true"
+  role="presentation"
+>
+  <!--
+    The heartbeat waveform path:
+    Starts flat → small bump → main peak (up) → deep valley (down) → recovery peak → flat
+    This mimics a simplified ECG/EKG P-QRS-T wave pattern.
+  -->
+  <path
+    d="M0 12 L30 12 L36 12 L40 8 L44 12 L50 12 L55 2 L60 22 L65 6 L70 12 L76 12 L80 8 L84 12 L120 12"
+    stroke={color}
+    stroke-width={stroke}
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  />
+</svg>

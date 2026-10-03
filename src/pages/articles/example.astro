@@ -1,0 +1,241 @@
+---
+/*
+ * =============================================================================
+ * ARTICLE TEMPLATE — The Health Gazette
+ * =============================================================================
+ * Example of a full article layout matching the mockup.
+ * =============================================================================
+ */
+
+import BaseLayout from '@layouts/BaseLayout.astro';
+import { Image } from 'astro:assets';
+import imgCancer from '@/assets/images/articles/cancer-cells.jpg';
+---
+
+<BaseLayout title="How Inflammation Shapes Cancer Progression">
+  <article class="article-page">
+    <div class="container container-narrow">
+      <!-- Article Header -->
+      <header class="article-header">
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+          <a href="/">Home</a> &rsaquo; <a href="/articles/">Articles</a> &rsaquo; <span>Spotlight</span>
+        </nav>
+        
+        <span class="badge badge-spotlight">Spotlight</span>
+        <h1 class="article-title">How Inflammation Shapes Cancer Progression</h1>
+        <p class="text-lead">Recent findings from the university's biology department reveal how chronic inflammatory responses can inadvertently create a microenvironment conducive to tumor growth.</p>
+        
+        <div class="article-author-block">
+          <!-- Placeholder avatar -->
+          <div class="author-avatar">DA</div>
+          <div class="author-meta">
+            <span class="author-name">Dr. Aisha Alahkar</span>
+            <span class="author-details">Biomedical Sciences · Oct 12, 2026 · 5 min read</span>
+          </div>
+        </div>
+      </header>
+    </div>
+
+    <!-- Hero Image (Full Bleed on small screens, bounded on large) -->
+    <div class="container">
+      <div class="article-hero-image">
+        <Image src={imgCancer} alt="Microscopic view of cancer cells" format="webp" />
+      </div>
+    </div>
+
+    <div class="container">
+      <div class="article-page-grid">
+        <!-- LEFT: Main Article Body -->
+        <div class="article-main">
+          <div class="article-body">
+            <p>For decades, researchers have understood that cancer is primarily a disease of genetic mutation. However, the role of the immune system and the body's inflammatory response has emerged as a critical piece of the puzzle. When inflammation becomes chronic, it shifts from being a defense mechanism to an enabler of tumor growth.</p>
+            
+            <p>The tumor microenvironment (TME) is a complex ecosystem. It consists not only of cancer cells but also of immune cells, blood vessels, and signaling molecules. Among these, inflammatory cytokines play a paradoxical role. "We used to think the immune system always fought cancer," says Dr. Hassan, lead researcher at CRI. "Now we know that certain immune cells, when chronically activated, actually build the scaffolding that tumors use to grow."</p>
+
+            <h2 id="the-cellular-mechanisms">The Cellular Mechanisms</h2>
+            <p>Macrophages are a prime example. While their primary job is to engulf and digest cellular debris and pathogens, tumors can biochemically reprogram them. These Tumor-Associated Macrophages (TAMs) secrete growth factors that promote angiogenesis—the formation of new blood vessels that feed the tumor.</p>
+
+            <blockquote>
+              "Inflammation is the fire that fuels the engine of cancer progression. If we can extinguish the fire, we can starve the engine."
+            </blockquote>
+
+            <p>Recent studies in our own laboratories have focused on the NF-κB signaling pathway. This pathway acts as a master switch for inflammation. When abnormally active, it prevents cancer cells from undergoing apoptosis (programmed cell death) while simultaneously encouraging them to proliferate.</p>
+
+            <h2 id="implications">Implications for Treatment</h2>
+            <p>Understanding this relationship opens new avenues for therapy. By combining traditional chemotherapy with anti-inflammatory agents, we may be able to dismantle the supportive microenvironment. Clinical trials at affiliated hospitals are already investigating whether targeting specific cytokines, like IL-6, can improve outcomes for patients with treatment-resistant breast cancer.</p>
+          </div>
+        </div>
+
+        <!-- RIGHT: Sidebar (TOC + References) -->
+        <aside class="article-sidebar">
+          <!-- Table of Contents -->
+          <div class="sidebar-widget sticky-toc">
+            <h3 class="widget-title">In this article</h3>
+            <ol class="toc-list">
+              <li><a href="#the-cellular-mechanisms">01. The Cellular Mechanisms</a></li>
+              <li><a href="#implications">02. Implications for Treatment</a></li>
+            </ol>
+          </div>
+          
+          <!-- References -->
+          <div class="sidebar-widget references-widget">
+            <h3 class="widget-title">References</h3>
+            <ol class="references-list">
+              <li>Hanahan D, Weinberg RA. Hallmarks of cancer: the next generation. <em>Cell</em>. 2011;144(5):646-674.</li>
+              <li>Coussens LM, Werb Z. Inflammation and cancer. <em>Nature</em>. 2002;420(6917):860-867.</li>
+            </ol>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </article>
+</BaseLayout>
+
+<style>
+  .article-page {
+    padding-block: var(--thg-space-8) var(--thg-space-16);
+  }
+
+  /* ---- Header ---- */
+  .article-header {
+    margin-bottom: var(--thg-space-8);
+  }
+
+  .breadcrumb {
+    font-size: var(--thg-text-xs);
+    color: var(--thg-color-muted);
+    margin-bottom: var(--thg-space-6);
+  }
+
+  .breadcrumb a {
+    color: var(--thg-color-ink-soft);
+    text-decoration: none;
+  }
+
+  .breadcrumb a:hover {
+    color: var(--thg-color-red);
+    text-decoration: underline;
+  }
+
+  .article-title {
+    margin-top: var(--thg-space-4);
+    margin-bottom: var(--thg-space-4);
+    font-size: clamp(var(--thg-text-3xl), 5vw, var(--thg-text-5xl));
+    line-height: var(--thg-leading-tight);
+    letter-spacing: var(--thg-tracking-tight);
+  }
+
+  .text-lead {
+    font-size: var(--thg-text-lg);
+    color: var(--thg-color-ink-soft);
+    line-height: var(--thg-leading-relaxed);
+    margin-bottom: var(--thg-space-8);
+  }
+
+  /* ---- Author Block ---- */
+  .article-author-block {
+    display: flex;
+    align-items: center;
+    gap: var(--thg-space-4);
+    padding-top: var(--thg-space-6);
+    border-top: var(--thg-rule-thin) solid var(--thg-color-line);
+  }
+
+  .author-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background-color: var(--thg-color-red);
+    color: var(--thg-color-paper);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--thg-font-display);
+    font-size: var(--thg-text-lg);
+    font-weight: var(--thg-weight-bold);
+  }
+
+  .author-meta {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .author-name {
+    font-family: var(--thg-font-body);
+    font-weight: var(--thg-weight-bold);
+    color: var(--thg-color-ink);
+  }
+
+  .author-details {
+    font-size: var(--thg-text-xs);
+    color: var(--thg-color-muted);
+  }
+
+  /* ---- Hero Image ---- */
+  .article-hero-image {
+    margin-bottom: var(--thg-space-12);
+  }
+
+  .article-hero-image img {
+    width: 100%;
+    height: auto;
+    max-height: 600px;
+    object-fit: cover;
+    /* No border radius per mockup specs */
+  }
+
+  /* ---- Sidebar ---- */
+  .article-sidebar {
+    padding-top: var(--thg-space-4);
+  }
+
+  .sidebar-widget {
+    margin-bottom: var(--thg-space-10);
+    padding-bottom: var(--thg-space-6);
+    border-bottom: var(--thg-rule-thin) solid var(--thg-color-line);
+  }
+
+  .sticky-toc {
+    position: sticky;
+    top: 100px; /* Account for sticky header */
+  }
+
+  .widget-title {
+    font-family: var(--thg-font-body);
+    font-size: var(--thg-text-sm);
+    font-weight: var(--thg-weight-bold);
+    letter-spacing: var(--thg-tracking-wider);
+    text-transform: uppercase;
+    color: var(--thg-color-muted);
+    margin-bottom: var(--thg-space-4);
+  }
+
+  .toc-list, .references-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .toc-list li {
+    margin-bottom: var(--thg-space-3);
+  }
+
+  .toc-list a {
+    font-family: var(--thg-font-display);
+    font-size: var(--thg-text-base);
+    color: var(--thg-color-ink);
+    text-decoration: none;
+    transition: color var(--thg-transition-fast);
+  }
+
+  .toc-list a:hover {
+    color: var(--thg-color-red);
+  }
+
+  .references-list li {
+    font-size: var(--thg-text-xs);
+    color: var(--thg-color-muted);
+    margin-bottom: var(--thg-space-3);
+    line-height: var(--thg-leading-normal);
+  }
+</style>

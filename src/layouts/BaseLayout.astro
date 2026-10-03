@@ -1,0 +1,153 @@
+---
+/*
+ * =============================================================================
+ * BASE LAYOUT — The Health Gazette
+ * =============================================================================
+ * The root layout that wraps every page. Provides:
+ *   - HTML document structure with proper lang, meta, and OG tags
+ *   - Font loading and global stylesheet
+ *   - Skip link for accessibility
+ *   - Header and Footer (consistent across all pages)
+ *   - Main content slot
+ *
+ * USAGE:
+ *   <BaseLayout title="About" description="Learn about CRA-SSF">
+ *     <YourPageContent />
+ *   </BaseLayout>
+ *
+ * The title is appended to the site name:
+ *   "About — The Health Gazette"
+ *   If no title is provided, just "The Health Gazette" is used.
+ * =============================================================================
+ */
+
+import Header from '@components/Header.astro';
+import Footer from '@components/Footer.astro';
+import PaperShaderOverlay from '@components/PaperShaderOverlay';
+import '@styles/global.css';
+
+interface Props {
+  /** Page title — appended to "The Health Gazette" */
+  title?: string;
+  /** Meta description for SEO */
+  description?: string;
+  /** OG image URL for social sharing */
+  ogImage?: string;
+}
+
+const {
+  title,
+  description = 'A student scientific publication by the Cancer Research & Awareness Student Scientific Forum at Abu Dhabi University.',
+  ogImage,
+} = Astro.props;
+
+/* Build the full page title:
+ * - Page-specific: "About — The Health Gazette"
+ * - Homepage: "The Health Gazette" */
+const fullTitle = title
+  ? `${title} — The Health Gazette`
+  : 'The Health Gazette';
+
+/* Canonical URL for SEO — prevents duplicate content issues */
+const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Character encoding — must be first -->
+    <meta charset="UTF-8" />
+
+    <!-- Viewport — responsive design baseline -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- Dark Mode FOUC Prevention & JS Detection -->
+    <script is:inline>
+      // Add a class so CSS knows JS is enabled (prevents FOUC for the shader)
+      document.documentElement.classList.add('js-enabled');
+
+      const theme = (() => {
+        if (typeof localStorage !== 'undefined' && localStorage.getItem('theme')) {
+          return localStorage.getItem('theme');
+        }
+        if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+          return 'dark';
+        }
+        return 'light';
+      })();
+      if (theme === 'dark') {
+        document.documentElement.setAttribute('data-theme', 'dark');
+      } else {
+        document.documentElement.setAttribute('data-theme', 'light');
+      }
+    </script>
+
+    <style is:global>
+      /* Hide the publication frame until the React shader component mounts.
+         This prevents the jarring pop-in of the texture over the text. */
+      html.js-enabled .publication-frame {
+        opacity: 0;
+        transition: opacity 0.5s ease-out;
+      }
+      
+      html.shader-loaded .publication-frame {
+        opacity: 1;
+      }
+    </style>
+
+    <!-- Page title -->
+    <title>{fullTitle}</title>
+
+    <!-- SEO meta -->
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonicalURL} />
+
+    <!-- Open Graph — for social media sharing -->
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonicalURL} />
+    {ogImage && <meta property="og:image" content={ogImage} />}
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={fullTitle} />
+    <meta name="twitter:description" content={description} />
+    {ogImage && <meta name="twitter:image" content={ogImage} />}
+
+    <!-- Favicon — placeholder until we get the real one -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <!-- Generator tag for Astro -->
+    <meta name="generator" content={Astro.generator} />
+  </head>
+
+  <body>
+    <!-- Skip link — accessibility feature for keyboard navigation.
+         Becomes visible only when focused via Tab key.
+         Jumps past the header/nav directly to main content. -->
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+
+    <!-- Publication frame — the warm paper surface that floats on the darker body bg.
+         This single wrapper is what makes the site feel like a physical publication
+         rather than a flat webpage. -->
+    <div class="publication-frame">
+      <!-- 
+        Official PaperTexture shader from @paper-design/shaders-react
+        Renders client-side WebGL canvas with live tuning controls for LO.
+      -->
+      <PaperShaderOverlay client:only="react" />
+
+      <!-- Site header with navigation -->
+      <Header />
+
+      <!-- Main content area — the <slot> renders the page's content -->
+      <main id="main-content">
+        <slot />
+      </main>
+
+      <!-- Site footer -->
+      <Footer />
+    </div>
+  </body>
+</html>

@@ -1,0 +1,220 @@
+---
+/*
+ * =============================================================================
+ * ABOUT PAGE — The Health Gazette
+ * =============================================================================
+ * Single-column, content-width page describing CRA-SSF.
+ * Features:
+ * - Descriptive body text about the forum
+ * - "Join the Forum" CTA with outlined red button
+ * - "Our Partners" section with CRI + ADU logo placeholders
+ * - Decorative botanical element in top-right corner
+ * =============================================================================
+ */
+
+import BaseLayout from '@layouts/BaseLayout.astro';
+import BotanicalDecoration from '@components/BotanicalDecoration.astro';
+---
+
+<BaseLayout title="About" description="About the Cancer Research and Awareness Student Scientific Forum at Abu Dhabi University.">
+  <section class="about-page">
+    <div class="container container-narrow">
+      <BotanicalDecoration className="about-botanical" />
+      
+      <!-- Page title -->
+      <h1 class="about-title">About Us</h1>
+
+      <!-- Body text -->
+      <div class="about-body">
+        <p>
+          The Cancer Research and Awareness – Student Scientific Forum
+          <strong>(CRA-SSF)</strong> is a student-led forum associated with the
+          <a href="#" class="red-link">Cancer Research Institute</a>
+          at Abu Dhabi University. We exist to make science approachable,
+          to build research skills, spark scientific curiosity and raise
+          awareness across campus.
+        </p>
+        <p>
+          We're run by students, for students. Whether you're studying
+          a health science career or simply curious about diseases,
+          treatments or how research happens, there's a place for you here.
+          Through our awareness events, journal clubs, and our monthly
+          publication we help members practice real skills, including
+          writing, communicating science and thinking critically, while
+          contributing to build awareness and bring light to health issues
+          in our community.
+        </p>
+      </div>
+
+      <!-- Join the Forum CTA -->
+      <div class="join-section">
+        <h2 class="join-heading">Join the Forum</h2>
+        <p class="join-text">
+          Be part of a community that learns, creates and makes a difference.
+        </p>
+        <!-- TODO: Replace href with actual join link -->
+        <a href="#" class="btn btn-outline-red">
+          Join CRA-SSF <span aria-hidden="true">→</span>
+        </a>
+      </div>
+
+      <!-- Our Partners -->
+      <div class="partners-section">
+        <h2 class="partners-heading">Our Partners</h2>
+        <div class="partners-grid">
+          <!-- CRI — text-based logo (recreated in CSS) -->
+          <div class="partner-item">
+            <span class="partner-cri-letters">C R I</span>
+            <span class="partner-cri-name">Cancer Research Institute</span>
+          </div>
+          <!-- ADU — placeholder until real logo provided -->
+          <div class="partner-item">
+            <div class="partner-logo-placeholder">
+              <span>ADU</span>
+            </div>
+            <span class="partner-adu-name">Abu Dhabi University</span>
+            <span class="partner-adu-arabic">جامعة أبوظبي</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .about-page {
+    padding-block: var(--thg-space-10) var(--thg-space-16);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .about-botanical {
+    position: absolute;
+    top: var(--thg-space-10);
+    right: -50px;
+    opacity: 0.3;
+    pointer-events: none;
+  }
+
+  @media (max-width: 768px) {
+    .about-botanical {
+      width: 150px;
+      height: 150px;
+      right: -20px;
+    }
+  }
+
+  .about-title {
+    font-family: var(--thg-font-display);
+    font-size: var(--thg-text-3xl);
+    font-weight: var(--thg-weight-bold);
+    margin-bottom: var(--thg-space-8);
+  }
+
+  .about-body {
+    font-size: var(--thg-text-md);
+    line-height: var(--thg-leading-relaxed);
+    margin-bottom: var(--thg-space-12);
+  }
+
+  .about-body p {
+    margin-bottom: var(--thg-space-6);
+  }
+
+  .red-link {
+    color: var(--thg-color-red);
+    text-decoration-color: var(--thg-color-red);
+  }
+
+  .red-link:hover {
+    color: var(--thg-color-red-hover);
+  }
+
+  /* ---- Join section ---- */
+  .join-section {
+    padding-block: var(--thg-space-10);
+    border-top: var(--thg-rule-thin) solid var(--thg-color-line);
+    margin-bottom: var(--thg-space-10);
+  }
+
+  .join-heading {
+    font-family: var(--thg-font-display);
+    font-size: var(--thg-text-xl);
+    font-weight: var(--thg-weight-bold);
+    margin-bottom: var(--thg-space-2);
+  }
+
+  .join-text {
+    font-size: var(--thg-text-sm);
+    color: var(--thg-color-muted);
+    margin-bottom: var(--thg-space-4);
+  }
+
+  /* ---- Partners ---- */
+  .partners-section {
+    border-top: var(--thg-rule-thin) solid var(--thg-color-line);
+    padding-top: var(--thg-space-8);
+  }
+
+  .partners-heading {
+    font-family: var(--thg-font-body);
+    font-size: var(--thg-text-sm);
+    font-weight: var(--thg-weight-semibold);
+    letter-spacing: var(--thg-tracking-wider);
+    text-transform: uppercase;
+    color: var(--thg-color-muted);
+    margin-bottom: var(--thg-space-6);
+  }
+
+  .partners-grid {
+    display: flex;
+    gap: var(--thg-space-16);
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .partner-item {
+    display: flex;
+    flex-direction: column;
+    gap: var(--thg-space-1);
+  }
+
+  .partner-cri-letters {
+    font-family: var(--thg-font-body);
+    font-size: var(--thg-text-2xl);
+    font-weight: var(--thg-weight-bold);
+    letter-spacing: var(--thg-tracking-widest);
+    color: var(--thg-color-ink);
+  }
+
+  .partner-cri-name {
+    font-size: var(--thg-text-xs);
+    color: var(--thg-color-muted);
+  }
+
+  .partner-logo-placeholder {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: var(--thg-color-warm);
+    border: 1px solid var(--thg-color-line);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: var(--thg-weight-bold);
+    color: var(--thg-color-muted);
+    margin-bottom: var(--thg-space-2);
+  }
+
+  .partner-adu-name {
+    font-size: var(--thg-text-sm);
+    font-weight: var(--thg-weight-semibold);
+    color: var(--thg-color-ink);
+  }
+
+  .partner-adu-arabic {
+    font-size: var(--thg-text-sm);
+    color: var(--thg-color-muted);
+    direction: rtl;
+  }
+</style>

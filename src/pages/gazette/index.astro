@@ -1,0 +1,497 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+import { Image } from 'astro:assets';
+import { sanityClient } from "sanity:client";
+import imageUrlBuilder from "@sanity/image-url";
+import imgOct26 from '@/assets/images/covers/issue-03-october-2026.jpg';
+
+const builder = imageUrlBuilder(sanityClient);
+function urlFor(source) {
+  return builder.image(source);
+}
+
+// Fetch published issues from Sanity
+const sanityIssues = await sanityClient.fetch(`*[_type == "issue"] | order(releaseDate desc)`);
+
+// Hardcoded fallback data in case Sanity is empty
+const fallbackIssues = [
+  {
+    number: '03',
+    month: 'October',
+    year: '2026',
+    label: 'Issue 03',
+    sublabel: 'October 2026',
+    description: 'Breast cancer awareness, inflammation pathways, ADU student research, and a science crossword.',
+    topics: ['Cancer', 'Research', 'Campus', 'Science'],
+    cover: imgOct26,
+    coverAlt: 'The Health Gazette – October 2026 cover',
+    href: '/gazette/issue-03/',
+    isLatest: true,
+  },
+  {
+    number: '02',
+    month: 'September',
+    year: '2026',
+    label: 'Issue 02',
+    sublabel: 'September 2026',
+    description: 'Immune system myths, new oncology faculty interviews, and student voices from the lab.',
+    topics: ['Immunity', 'Faculty', 'Lab Life'],
+    cover: null,
+    coverAlt: 'The Health Gazette – September 2026 cover',
+    href: '/gazette/issue-02/',
+    isLatest: false,
+  },
+  {
+    number: '01',
+    month: 'August',
+    year: '2026',
+    label: 'Issue 01',
+    sublabel: 'August 2026 — Inaugural',
+    description: 'The inaugural edition: CRA-SSF mission, a primer on cancer biology, and the first student roundtable.',
+    topics: ['Inaugural', 'Mission', 'Biology'],
+    cover: null,
+    coverAlt: 'The Health Gazette – August 2026 Inaugural cover',
+    href: '/gazette/issue-01/',
+    isLatest: false,
+  },
+];
+
+// Map Sanity issues to our frontend structure
+const issues = sanityIssues.length > 0 ? sanityIssues.map((issue, index) => {
+  return {
+    number: issue.issueNumber,
+    month: issue.month,
+    year: issue.year,
+    label: issue.title,
+    sublabel: `${issue.month} ${issue.year}`,
+    description: issue.description || '',
+    topics: issue.keyTopics || [],
+    cover: issue.coverImage ? urlFor(issue.coverImage).width(600).url() : null,
+    coverAlt: issue.title,
+    href: `/gazette/issue-${issue.issueNumber}/`,
+    isLatest: index === 0, // The first one is the latest
+  }
+}) : fallbackIssues;
+---
+
+<BaseLayout
+  title="All Issues — The Health Gazette"
+  description="Browse every edition of The Health Gazette, the student scientific editorial of CRA-SSF at Abu Dhabi University."
+>
+  <section class="newsstand">
+    <div class="container">
+
+      <!-- PAGE HEADER -->
+      <header class="newsstand-hdr">
+        <div class="newsstand-hdr-rule-row">
+          <div class="hdr-rule"></div>
+          <div class="hdr-diamond" aria-hidden="true">◆</div>
+          <div class="hdr-rule"></div>
+        </div>
+        <p class="newsstand-overline">The Health Gazette</p>
+        <h1 class="newsstand-h1">All Issues</h1>
+        <p class="newsstand-sub">Each edition is a snapshot of campus science — research, questions, and student voices.</p>
+        <div class="newsstand-hdr-thick-rule" aria-hidden="true"></div>
+      </header>
+
+      <!-- CARDS SHELF -->
+      <div class="shelf">
+        {issues.map((issue) => (
+          <a href={issue.href} class="icard">
+            {issue.isLatest && <span class="icard-badge">Latest</span>}
+
+            <div class="icard-cover">
+              {issue.cover
+                ? <img
+                    src={issue.cover}
+                    alt={issue.coverAlt}
+                    width={300}
+                    height={420}
+                    class="icard-cover-img"
+                    loading="lazy"
+                  />
+                : <div class="icard-cover-ph">
+                    <span class="icard-ph-title">The<br/>Health<br/>Gazette</span>
+                    <span class="icard-ph-date">{issue.month}<br/>{issue.year}</span>
+                  </div>
+              }
+            </div>
+
+            <div class="icard-body">
+              <div class="icard-meta">
+                <span class="icard-no">No.{issue.number}</span>
+                <span class="icard-dot" aria-hidden="true">·</span>
+                <span class="icard-date">{issue.month} {issue.year}</span>
+              </div>
+
+              <h2 class="icard-label">{issue.label}</h2>
+              <p class="icard-sublabel">{issue.sublabel}</p>
+
+              <p class="icard-desc">{issue.description}</p>
+
+              <div class="icard-topics">
+                {issue.topics.map((t) => <span class="icard-chip">{t}</span>)}
+              </div>
+
+              <span class="icard-cta">Read Issue <span aria-hidden="true">→</span></span>
+            </div>
+          </a>
+        ))}
+      </div>
+
+      <!-- FOOTER NOTE -->
+      <div class="newsstand-end">
+        <div class="newsstand-end-rule"></div>
+        <p class="newsstand-end-note">
+          New issues are published monthly during the academic term.
+          <a href="/submit/" class="newsstand-end-link">Submit an article →</a>
+        </p>
+      </div>
+
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  /* ===================================================
+     SECTION
+     =================================================== */
+  .newsstand {
+    padding-block: clamp(2.5rem, 6vw, 5rem) clamp(4rem, 8vw, 7rem);
+  }
+
+  /* ===================================================
+     HEADER
+     =================================================== */
+  .newsstand-hdr {
+    text-align: center;
+    margin-bottom: clamp(2rem, 4vw, 3.5rem);
+  }
+
+  .newsstand-hdr-rule-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+  }
+
+  .hdr-rule {
+    flex: 1;
+    height: 1px;
+    background: var(--thg-color-line-strong);
+  }
+
+  .hdr-diamond {
+    font-size: 0.5rem;
+    color: var(--thg-color-red);
+    flex-shrink: 0;
+  }
+
+  .newsstand-overline {
+    font-family: var(--thg-font-body);
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--thg-color-muted);
+    margin-bottom: 0.4rem;
+  }
+
+  .newsstand-h1 {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: clamp(2.2rem, 5vw, 3.4rem);
+    font-weight: 900;
+    letter-spacing: -0.02em;
+    color: var(--thg-color-ink);
+    line-height: 1;
+    margin-bottom: 0.6rem;
+  }
+
+  .newsstand-sub {
+    font-family: 'Source Serif 4', Georgia, serif;
+    font-style: italic;
+    font-size: 0.875rem;
+    color: var(--thg-color-muted);
+    max-width: 52ch;
+    margin: 0 auto 1.5rem;
+    line-height: 1.55;
+  }
+
+  .newsstand-hdr-thick-rule {
+    width: 100%;
+    height: 3px;
+    background: var(--thg-color-ink);
+  }
+
+  /* ===================================================
+     SHELF GRID
+     =================================================== */
+  .shelf {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2.5rem 2rem;
+    align-items: start;
+    margin-top: 3rem;
+  }
+
+  @media (max-width: 900px) {
+    .shelf { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  @media (max-width: 540px) {
+    .shelf {
+      grid-template-columns: 1fr;
+      max-width: 300px;
+      margin-inline: auto;
+    }
+  }
+
+  /* ===================================================
+     ISSUE CARD
+     =================================================== */
+  .icard {
+    display: flex;
+    flex-direction: column;
+    text-decoration: none;
+    color: inherit;
+    position: relative;
+    transition: transform 0.22s ease;
+  }
+
+  .icard:hover {
+    transform: translateY(-5px);
+  }
+
+  /* Badge */
+  .icard-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 3;
+    background: var(--thg-color-red);
+    color: #fff;
+    font-family: var(--thg-font-body);
+    font-size: 0.6rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 3px 8px;
+  }
+
+  /* ===================================================
+     COVER
+     =================================================== */
+  .icard-cover {
+    width: 100%;
+    aspect-ratio: 5 / 7;
+    overflow: hidden;
+    flex-shrink: 0;
+    border: 1px solid var(--thg-color-line-strong);
+    background: var(--thg-color-parchment-dark);
+    box-shadow:
+      0 3px 0 0 var(--thg-color-ink),
+      0 8px 24px rgba(0,0,0,0.14);
+    transition: box-shadow 0.22s ease;
+    position: relative;
+  }
+
+  .icard:hover .icard-cover {
+    box-shadow:
+      0 3px 0 0 var(--thg-color-ink),
+      0 18px 42px rgba(0,0,0,0.22);
+  }
+
+  .icard-cover-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.35s ease;
+  }
+
+  .icard:hover .icard-cover-img {
+    transform: scale(1.02);
+  }
+
+  /* Placeholder when no cover image yet */
+  .icard-cover-ph {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.5rem 1.25rem;
+    background: var(--thg-color-parchment);
+    position: relative;
+  }
+
+  .icard-cover-ph::before {
+    content: '';
+    position: absolute;
+    inset: 8px;
+    border: 1px solid var(--thg-color-line-strong);
+    pointer-events: none;
+  }
+
+  .icard-ph-title {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 1.1rem;
+    font-weight: 900;
+    text-align: center;
+    line-height: 1.15;
+    color: var(--thg-color-ink);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    flex: 1;
+    display: flex;
+    align-items: center;
+  }
+
+  .icard-ph-date {
+    font-family: var(--thg-font-body);
+    font-size: 0.6rem;
+    font-weight: 700;
+    text-align: center;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--thg-color-muted);
+  }
+
+  /* ===================================================
+     CARD BODY (below cover)
+     =================================================== */
+  .icard-body {
+    padding: 1rem 0 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+
+  .icard-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  .icard-no {
+    font-family: var(--thg-font-body);
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--thg-color-red);
+    border-bottom: 1.5px solid var(--thg-color-red);
+    padding-bottom: 1px;
+  }
+
+  .icard-dot {
+    color: var(--thg-color-line-strong);
+    font-size: 0.75rem;
+  }
+
+  .icard-date {
+    font-family: var(--thg-font-body);
+    font-size: 0.65rem;
+    letter-spacing: 0.06em;
+    color: var(--thg-color-muted);
+  }
+
+  .icard-label {
+    font-family: 'Source Serif 4', Georgia, serif;
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--thg-color-ink);
+    line-height: 1.2;
+    margin: 0;
+    transition: color 0.15s ease;
+  }
+
+  .icard:hover .icard-label {
+    color: var(--thg-color-red);
+  }
+
+  .icard-sublabel {
+    font-family: var(--thg-font-body);
+    font-size: 0.7rem;
+    color: var(--thg-color-muted);
+    letter-spacing: 0.04em;
+  }
+
+  .icard-desc {
+    font-size: 0.78rem;
+    line-height: 1.55;
+    color: var(--thg-color-muted);
+    border-top: 1px solid var(--thg-color-line);
+    padding-top: 0.5rem;
+    margin-top: 0.1rem;
+  }
+
+  .icard-topics {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem;
+    margin-top: 0.1rem;
+  }
+
+  .icard-chip {
+    font-family: var(--thg-font-body);
+    font-size: 0.58rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--thg-color-ink-soft);
+    border: 1px solid var(--thg-color-line-strong);
+    padding: 2px 7px;
+  }
+
+  .icard-cta {
+    font-family: var(--thg-font-body);
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--thg-color-red);
+    margin-top: 0.2rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.2rem;
+  }
+
+  .icard:hover .icard-cta {
+    text-decoration: underline;
+  }
+
+  /* ===================================================
+     FOOTER NOTE
+     =================================================== */
+  .newsstand-end {
+    margin-top: clamp(3rem, 6vw, 5rem);
+    text-align: center;
+  }
+
+  .newsstand-end-rule {
+    height: 1px;
+    background: var(--thg-color-line-strong);
+    margin-bottom: 1.25rem;
+  }
+
+  .newsstand-end-note {
+    font-family: var(--thg-font-body);
+    font-size: 0.75rem;
+    color: var(--thg-color-muted);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1.25rem;
+    flex-wrap: wrap;
+  }
+
+  .newsstand-end-link {
+    font-weight: 600;
+    color: var(--thg-color-red);
+    text-decoration: none;
+  }
+
+  .newsstand-end-link:hover {
+    text-decoration: underline;
+  }
+</style>

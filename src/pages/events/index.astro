@@ -1,0 +1,279 @@
+---
+/*
+ * =============================================================================
+ * EVENTS PAGE — The Health Gazette
+ * =============================================================================
+ * Lists upcoming and past events with filter tabs and structured rows.
+ *
+ * Features:
+ * - Filter tab bar (All / Journal Club / Awareness / Campaign / Expert Talk / Workshop)
+ * - Event rows with large red date numbers
+ * - Category badges on each event
+ * - "Stay Updated" Instagram callout card at the bottom
+ * =============================================================================
+ */
+
+import BaseLayout from '@layouts/BaseLayout.astro';
+
+/* Placeholder event data — will come from Sanity */
+const events = [
+  { month: 'OCT', day: '10', title: 'Journal Club', description: 'Details coming soon', badge: 'Journal Club', type: 'journal-club', moreLink: '#' },
+  { month: 'OCT', day: '18', title: 'Breast Cancer Awareness Campaign', description: 'Details coming soon', badge: 'Awareness Campaign', type: 'awareness', moreLink: '#' },
+  { month: 'NOV', day: '07', title: 'Lung Cancer Awareness Expert Talk', description: 'Details coming soon', badge: 'Expert Talk', type: 'expert-talk', moreLink: '#' },
+  { month: 'NOV', day: '21', title: 'Journal Club', description: 'Details coming soon', badge: 'Journal Club', type: 'journal-club', moreLink: '#' },
+];
+
+const filterTabs = ['All', 'Journal Club', 'Awareness', 'Campaign', 'Expert Talk', 'Workshop'];
+---
+
+<BaseLayout title="Events" description="Upcoming events, expert talks, and awareness campaigns by CRA-SSF.">
+  <section class="events-page">
+    <div class="container container-wide">
+      <!-- Page header -->
+      <div class="page-header">
+        <h1 class="page-title">Upcoming Events</h1>
+        <p class="page-description">
+          Join our events, attend expert talks, and be part of the conversation
+          on cancer research and health.
+        </p>
+      </div>
+
+      <!-- Filter tabs -->
+      <div class="filter-tabs" role="tablist" aria-label="Filter events by type">
+        {filterTabs.map((tab, i) => (
+          <button
+            role="tab"
+            class:list={['filter-tab', { active: i === 0 }]}
+            aria-selected={i === 0 ? 'true' : 'false'}
+          >
+            {tab}
+          </button>
+        ))}
+      </div>
+
+      <!-- Event list -->
+      <div class="event-list">
+        {events.map((event) => (
+          <div class="event-row-full" data-type={event.type}>
+            <div class="event-date-block">
+              <span class="event-month-abbr">{event.month}</span>
+              <span class="event-day-large">{event.day}</span>
+            </div>
+            <div class="event-content">
+              <h3 class="event-title-full">{event.title}</h3>
+              <p class="event-desc-full">{event.description}</p>
+              <span class="badge badge-event">{event.badge}</span>
+            </div>
+            <div class="event-actions">
+              <span class="event-type-label">{event.badge}</span>
+              <a href={event.moreLink} class="event-more-link">
+                More details <span aria-hidden="true">→</span>
+              </a>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <!-- Stay Updated callout -->
+      <div class="stay-updated">
+        <div class="stay-updated-inner">
+          <div class="stay-updated-dot" aria-hidden="true"></div>
+          <h3 class="stay-updated-title">Stay Updated</h3>
+          <p class="stay-updated-text">
+            Follow us on Instagram for the latest announcements and event updates.
+          </p>
+          <!-- TODO: Replace href with actual Instagram link -->
+          <a href="#" class="btn btn-primary stay-updated-btn">
+            Follow @cra_ssf <span aria-hidden="true">→</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .events-page {
+    padding-block: var(--thg-space-10) var(--thg-space-16);
+  }
+
+  /* ---- Page header ---- */
+  .page-header {
+    margin-bottom: var(--thg-space-8);
+  }
+
+  .page-title {
+    font-family: var(--thg-font-display);
+    font-size: var(--thg-text-3xl);
+    font-weight: var(--thg-weight-bold);
+    margin-bottom: var(--thg-space-3);
+  }
+
+  .page-description {
+    font-size: var(--thg-text-base);
+    color: var(--thg-color-ink-soft);
+    max-width: 60ch;
+    margin: 0;
+  }
+
+  /* ---- Filter tabs ---- */
+  .filter-tabs {
+    display: flex;
+    gap: var(--thg-space-6);
+    border-bottom: var(--thg-rule-thin) solid var(--thg-color-line);
+    margin-bottom: var(--thg-space-8);
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .filter-tab {
+    background: none;
+    border: none;
+    font-family: var(--thg-font-body);
+    font-size: var(--thg-text-sm);
+    font-weight: var(--thg-weight-medium);
+    color: var(--thg-color-muted);
+    padding: var(--thg-space-3) 0;
+    cursor: pointer;
+    white-space: nowrap;
+    border-bottom: 2px solid transparent;
+    transition: color var(--thg-transition-fast), border-color var(--thg-transition-fast);
+  }
+
+  .filter-tab:hover {
+    color: var(--thg-color-ink);
+  }
+
+  .filter-tab.active {
+    color: var(--thg-color-ink);
+    font-weight: var(--thg-weight-bold);
+    border-bottom-color: var(--thg-color-ink);
+  }
+
+  /* ---- Event rows ---- */
+  .event-list {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .event-row-full {
+    display: grid;
+    grid-template-columns: 80px 1fr auto;
+    gap: var(--thg-space-6);
+    align-items: start;
+    padding-block: var(--thg-space-6);
+    border-bottom: var(--thg-rule-thin) solid var(--thg-color-line);
+  }
+
+  .event-date-block {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .event-month-abbr {
+    font-family: var(--thg-font-body);
+    font-size: var(--thg-text-xs);
+    font-weight: var(--thg-weight-bold);
+    letter-spacing: var(--thg-tracking-wider);
+    text-transform: uppercase;
+    color: var(--thg-color-red);
+  }
+
+  .event-day-large {
+    font-family: var(--thg-font-display);
+    font-size: var(--thg-text-3xl);
+    font-weight: var(--thg-weight-bold);
+    color: var(--thg-color-red);
+    line-height: 1;
+  }
+
+  .event-title-full {
+    font-family: var(--thg-font-body);
+    font-size: var(--thg-text-lg);
+    font-weight: var(--thg-weight-bold);
+    color: var(--thg-color-ink);
+    margin-bottom: var(--thg-space-1);
+  }
+
+  .event-desc-full {
+    font-size: var(--thg-text-sm);
+    color: var(--thg-color-muted);
+    margin-bottom: var(--thg-space-2);
+  }
+
+  .event-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: var(--thg-space-2);
+  }
+
+  .event-type-label {
+    font-size: var(--thg-text-xs);
+    color: var(--thg-color-muted);
+  }
+
+  .event-more-link {
+    font-size: var(--thg-text-sm);
+    font-weight: var(--thg-weight-medium);
+    color: var(--thg-color-ink);
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  .event-more-link:hover {
+    color: var(--thg-color-red);
+  }
+
+  /* ---- Stay Updated ---- */
+  .stay-updated {
+    margin-top: var(--thg-space-12);
+  }
+
+  .stay-updated-inner {
+    background: var(--thg-color-ink);
+    color: var(--thg-color-paper);
+    padding: var(--thg-space-8);
+    border-radius: var(--thg-radius-lg);
+  }
+
+  .stay-updated-dot {
+    width: 8px;
+    height: 8px;
+    background: #4CAF50;
+    border-radius: 50%;
+    margin-bottom: var(--thg-space-3);
+  }
+
+  .stay-updated-title {
+    font-family: var(--thg-font-display);
+    font-size: var(--thg-text-lg);
+    font-weight: var(--thg-weight-bold);
+    color: var(--thg-color-paper);
+    margin-bottom: var(--thg-space-2);
+  }
+
+  .stay-updated-text {
+    font-size: var(--thg-text-sm);
+    color: var(--thg-color-parchment);
+    margin-bottom: var(--thg-space-4);
+    max-width: 40ch;
+  }
+
+  .stay-updated-btn {
+    font-size: var(--thg-text-xs);
+  }
+
+  @media (max-width: 640px) {
+    .event-row-full {
+      grid-template-columns: 60px 1fr;
+    }
+
+    .event-actions {
+      grid-column: 2;
+      flex-direction: row;
+      align-items: center;
+    }
+  }
+</style>

@@ -1,0 +1,239 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+import { sanityClient } from "sanity:client";
+import imageUrlBuilder from "@sanity/image-url";
+import FlipBook from '@components/FlipBook';
+
+export async function getStaticPaths() {
+  const issues = await sanityClient.fetch(`*[_type == "issue"]`);
+  
+  return issues.map((issue) => {
+    return {
+      params: { issueNumber: issue.issueNumber },
+      props: { issue },
+    };
+  });
+}
+
+const { issue } = Astro.props;
+
+const builder = imageUrlBuilder(sanityClient);
+function urlFor(source) {
+  return builder.image(source);
+}
+
+// Fetch the PDF URL
+let pdfUrl = null;
+if (issue.pdfFile && issue.pdfFile.asset && issue.pdfFile.asset._ref) {
+  // Using Sanity's asset reference to reconstruct the URL
+  // Format: file-ASSET_ID-EXTENSION
+  const ref = issue.pdfFile.asset._ref;
+  const [_file, id, extension] = ref.split('-');
+  pdfUrl = `https://cdn.sanity.io/files/hm0dr0ya/production/${id}.${extension}`;
+}
+---
+
+<BaseLayout 
+  title={`${issue.title} — The Health Gazette E-Reader`} 
+  description={issue.description}
+>
+  <div class="ereader-wrapper">
+    <header class="ereader-header">
+      <div class="container ereader-header-inner">
+        <a href="/gazette/" class="back-btn">
+          <span aria-hidden="true">←</span> Back to Shelf
+        </a>
+        <h1 class="ereader-title">{issue.title}</h1>
+        <div class="ereader-actions">
+          {pdfUrl && (
+            <a href={pdfUrl} target="_blank" rel="noopener noreferrer" class="btn btn-secondary btn-sm" download>
+              Download PDF
+            </a>
+          )}
+        </div>
+      </div>
+    </header>
+
+    <main class="ereader-main">
+      {pdfUrl ? (
+        <div class="pdf-container">
+          <FlipBook client:only="react" pdfUrl={pdfUrl} />
+        </div>
+      ) : (
+        <div class="no-pdf">
+          <h2>No PDF Attached</h2>
+          <p>Please upload a PDF file for this issue in the CMS.</p>
+        </div>
+      )}
+    </main>
+  </div>
+</BaseLayout>
+
+<style>
+  .ereader-wrapper {
+    display: flex;
+    flex-direction: column;
+    height: 100vh; /* Full viewport height for the reader */
+    background-color: var(--thg-color-paper);
+  }
+
+  .ereader-header {
+    background: var(--thg-color-warm);
+    border-bottom: 1px solid var(--thg-color-line);
+    padding-block: var(--thg-space-3);
+    flex-shrink: 0;
+  }
+
+  .ereader-header-inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .back-btn {
+    font-family: var(--thg-font-body);
+    font-size: var(--thg-text-sm);
+    color: var(--thg-color-ink);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 500;
+  }
+  .back-btn:hover {
+    color: var(--thg-color-red);
+  }
+
+  .ereader-title {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin: 0;
+  }
+
+  .ereader-main {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #dfdcd3; /* Darker paper background to contrast the magazine */
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* E-READER DESK AND TACTILE STAGE */
+  .pdf-container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    box-sizing: border-box;
+    position: relative;
+    overflow: hidden;
+  }
+
+  :global(.stf__parent) {
+    box-shadow: 0 25px 60px -15px rgba(25, 18, 12, 0.45), 0 0 0 1px rgba(0,0,0,0.06);
+    background-color: transparent !important;
+  }
+
+  :global(.dock-btn) {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: transparent;
+    border: none;
+    color: #e5ded2;
+    font-family: var(--thg-font-body);
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 0.35rem 0.75rem;
+    border-radius: 9999px;
+    transition: all 0.2s ease;
+  }
+
+  :global(.dock-btn:hover) {
+    background: rgba(255, 255, 255, 0.15);
+    color: #ffffff;
+  }
+
+  :global(.dock-page-indicator) {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 0.9rem;
+    color: #c9bda8;
+    font-style: italic;
+    min-width: 100px;
+    text-align: center;
+    border-inline: 1px solid rgba(255, 255, 255, 0.15);
+    padding-inline: 0.75rem;
+  }
+
+  /* VINTAGE LOADER */
+  :global(.ereader-loading-card) {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 2.5rem 3rem;
+    background: #f4eee2;
+    border: 1px solid rgba(60, 45, 30, 0.15);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.08);
+    border-radius: 4px;
+    max-width: 420px;
+  }
+
+  :global(.vintage-spinner) {
+    width: 38px;
+    height: 38px;
+    border: 3px solid rgba(139, 38, 53, 0.15);
+    border-top-color: var(--thg-color-red, #8b2635);
+    border-radius: 50%;
+    animation: spin 0.9s cubic-bezier(0.6, 0.2, 0.4, 0.9) infinite;
+    margin-bottom: 1.25rem;
+  }
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+
+  :global(.loading-eyebrow) {
+    font-family: var(--thg-font-mono, monospace);
+    font-size: 0.65rem;
+    letter-spacing: 0.18em;
+    color: #8b2635;
+    margin-bottom: 0.5rem;
+    font-weight: 700;
+  }
+
+  :global(.loading-headline) {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 1.15rem;
+    color: #1e1812;
+    margin: 0 0 0.5rem 0;
+  }
+
+  :global(.loading-tip) {
+    font-family: var(--thg-font-body);
+    font-size: 0.78rem;
+    color: #7a7065;
+    margin: 0;
+  }
+
+  :global(.ereader-error-card) {
+    padding: 2rem;
+    background: #fff;
+    border: 1px solid #e0c8c8;
+    color: #8b2635;
+    text-align: center;
+    border-radius: 4px;
+  }
+
+  .no-pdf {
+    text-align: center;
+    color: var(--thg-color-muted);
+    font-family: var(--thg-font-body);
+  }
+</style>

@@ -1,0 +1,833 @@
+/* =============================================================================
+   THE HEALTH GAZETTE — Design System
+   =============================================================================
+   A student scientific editorial publication by CRA-SSF at Abu Dhabi University.
+
+   DESIGN PHILOSOPHY:
+   Vintage newspaper identity (~25-30%) for masthead, rules, issue covers.
+   Modern clean usability (~70-75%) for reading, navigation, forms.
+
+   FONT STACK:
+   - Masthead script: Pinyon Script (for "The")
+   - Masthead display: Playfair Display Black (for "Health Gazette")
+   - Headlines: Source Serif 4 (optical sizing)
+   - Body/UI: Inter
+
+   COLOR PHILOSOPHY:
+   Red is rare ink — CTAs, badges, dates, drop caps. Never backgrounds.
+   Ink black for text. White canvas. Warm parchment for editorial accent.
+   ============================================================================= */
+
+
+/* =============================================================================
+   0. FONT IMPORTS
+   ============================================================================= */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Pinyon+Script&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,500;1,600;1,700;1,800;1,900&family=Source+Serif+4:ital,opsz,wght@0,8..60,300;0,8..60,400;0,8..60,500;0,8..60,600;0,8..60,700;0,8..60,800;0,8..60,900;1,8..60,400;1,8..60,500;1,8..60,600&display=swap');
+
+
+/* =============================================================================
+   1. DESIGN TOKENS
+   ============================================================================= */
+:root {
+  /* -- COLORS ------------------------------------------------------------ */
+  /*
+   * COLOR SYSTEM — measured from mockup reference Sept 26, 2026
+   * Red:       #AF2227  — brick maroon, aged pigment (NOT bright crimson)
+   * Paper:     #F5EFE2  — warm ivory publication surface (NOT white)
+   * Body bg:   #E9DFCC  — slightly darker, makes publication "float"
+   * Metadata:  #DFDACE  — tonal band for VOL/ISSUE/MONTH strip
+   * Footer dk: #2C2C2C  — near-black footer anchor band
+   */
+  --thg-color-red: #AF2227;
+  --thg-color-red-hover: #8E1B1F;
+  --thg-color-red-light: #F3DEDE;
+  --thg-color-ink: #1A1A1A;
+  --thg-color-ink-soft: #2E2B28;
+  --thg-color-paper: #F5EFE2;
+  --thg-color-body-bg: #E9DFCC;
+  --thg-color-warm: #F0E8D8;
+  --thg-color-parchment: #EADDC8;
+  --thg-color-parchment-dark: #D8CEBA;
+  --thg-color-metadata-band: #DFDACE;
+  --thg-color-footer-dark: #2C2C2C;
+  --thg-color-muted: #6B6B6B;
+  --thg-color-line: #CFC9BE;
+  --thg-color-line-strong: #A39E93;
+
+  /* -- FONTS ------------------------------------------------------------- */
+  --thg-font-masthead-script: 'Pinyon Script', cursive;
+  --thg-font-masthead-display: 'Playfair Display', 'Georgia', serif;
+  --thg-font-display: 'Source Serif 4', 'Georgia', 'Times New Roman', serif;
+  --thg-font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+
+  /* -- TYPE SCALE (Major Third 1.250) ------------------------------------ */
+  --thg-text-xs: 0.75rem;
+  --thg-text-sm: 0.875rem;
+  --thg-text-base: 1rem;
+  --thg-text-md: 1.125rem;
+  --thg-text-lg: 1.25rem;
+  --thg-text-xl: 1.563rem;
+  --thg-text-2xl: 1.953rem;
+  --thg-text-3xl: 2.441rem;
+  --thg-text-4xl: 3.052rem;
+  --thg-text-5xl: 3.815rem;
+
+  /* -- LINE HEIGHTS ------------------------------------------------------ */
+  --thg-leading-tight: 1.15;
+  --thg-leading-snug: 1.3;
+  --thg-leading-normal: 1.6;
+  --thg-leading-relaxed: 1.8;
+
+  /* -- FONT WEIGHTS ------------------------------------------------------ */
+  --thg-weight-light: 300;
+  --thg-weight-regular: 400;
+  --thg-weight-medium: 500;
+  --thg-weight-semibold: 600;
+  --thg-weight-bold: 700;
+  --thg-weight-heavy: 800;
+  --thg-weight-black: 900;
+
+  /* -- LETTER SPACING ---------------------------------------------------- */
+  --thg-tracking-tight: -0.02em;
+  --thg-tracking-normal: 0;
+  --thg-tracking-wide: 0.05em;
+  --thg-tracking-wider: 0.1em;
+  --thg-tracking-widest: 0.15em;
+
+  /* -- SPACING (8px grid) ------------------------------------------------ */
+  --thg-space-1: 0.25rem;
+  --thg-space-2: 0.5rem;
+  --thg-space-3: 0.75rem;
+  --thg-space-4: 1rem;
+  --thg-space-5: 1.25rem;
+  --thg-space-6: 1.5rem;
+  --thg-space-8: 2rem;
+  --thg-space-10: 2.5rem;
+  --thg-space-12: 3rem;
+  --thg-space-16: 4rem;
+  --thg-space-20: 5rem;
+  --thg-space-24: 6rem;
+  --thg-gutter: var(--thg-space-6);
+  --thg-section-gap: var(--thg-space-16);
+  --thg-component-pad: var(--thg-space-6);
+
+  /* -- LAYOUT ------------------------------------------------------------ */
+  --thg-content-width: 45rem;
+  --thg-content-wide: 72rem;
+  --thg-content-max: 80rem;
+  --thg-radius-sm: 2px;
+  --thg-radius-md: 4px;
+  --thg-radius-lg: 6px;
+
+  /* -- RULES ------------------------------------------------------------- */
+  --thg-rule-thin: 1px;
+  --thg-rule-medium: 2px;
+  --thg-rule-thick: 3px;
+  --thg-rule-heavy: 5px;
+
+  /* -- TRANSITIONS ------------------------------------------------------- */
+  --thg-transition-fast: 150ms ease;
+  --thg-transition-base: 250ms ease;
+  --thg-transition-slow: 400ms ease;
+
+  /* -- SHADOWS ----------------------------------------------------------- */
+  --thg-shadow-sm: 0 1px 3px rgba(26, 26, 26, 0.08);
+  --thg-shadow-md: 0 4px 12px rgba(26, 26, 26, 0.1);
+  --thg-shadow-lg: 0 8px 24px rgba(26, 26, 26, 0.12);
+}
+
+
+/* =============================================================================
+   1b. DARK MODE TOKENS
+   =============================================================================
+   "Reading by candlelight in a library" — warm undertones throughout.
+   Every dark surface has a slight brown/amber warmth. ============================================================================= */
+[data-theme="dark"] {
+  --thg-color-red: #D4232F;
+  --thg-color-red-hover: #E63946;
+  --thg-color-red-light: #3A1A1D;
+  --thg-color-ink: #E8E0D4;
+  --thg-color-ink-soft: #C8BFB0;
+  --thg-color-paper: #1A1A18;
+  --thg-color-warm: #222018;
+  --thg-color-parchment: #2A2418;
+  --thg-color-parchment-dark: #1E1A12;
+  --thg-color-muted: #8A8A7A;
+  --thg-color-line: #3A3630;
+  --thg-color-line-strong: #4A4640;
+  --thg-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+  --thg-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
+  --thg-shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.5);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --thg-color-red: #D4232F;
+    --thg-color-red-hover: #E63946;
+    --thg-color-red-light: #3A1A1D;
+    --thg-color-ink: #E8E0D4;
+    --thg-color-ink-soft: #C8BFB0;
+    --thg-color-paper: #1A1A18;
+    --thg-color-warm: #222018;
+    --thg-color-parchment: #2A2418;
+    --thg-color-parchment-dark: #1E1A12;
+    --thg-color-muted: #8A8A7A;
+    --thg-color-line: #3A3630;
+    --thg-color-line-strong: #4A4640;
+    --thg-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+    --thg-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
+    --thg-shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.5);
+  }
+}
+
+
+/* =============================================================================
+   2. RESET
+   ============================================================================= */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+ul, ol { list-style: none; }
+
+html {
+  -moz-text-size-adjust: none;
+  -webkit-text-size-adjust: none;
+  text-size-adjust: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html { scroll-behavior: smooth; }
+}
+
+
+/* =============================================================================
+   3. BODY
+   ============================================================================= */
+body {
+  font-family: var(--thg-font-body);
+  font-size: var(--thg-text-base);
+  line-height: var(--thg-leading-normal);
+  font-weight: var(--thg-weight-regular);
+  color: var(--thg-color-ink);
+  /* Slightly darker body bg makes the publication surface "float" like a physical object */
+  background-color: var(--thg-color-body-bg);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-feature-settings: 'kern' 1, 'liga' 1;
+  overflow-x: hidden;
+  min-height: 100vh;
+}
+
+/* =============================================================================
+   3b. PUBLICATION FRAME
+   =============================================================================
+   The publication frame makes the website feel like a physical printed object
+   sitting on a slightly darker surface, not a flat white webpage.
+   
+   STRUCTURE:
+   body { background: #E9DFCC }  <- the "desk" / surrounding surface
+   .publication-frame {
+     background: #F5EFE2         <- the "paper" publication surface
+     box-shadow: slight depth     <- physical object shadow
+     position: relative           <- for texture overlay
+   }
+   .publication-frame::before {  <- paper noise texture at very low opacity }
+   ============================================================================= */
+.publication-frame {
+  background-color: var(--thg-color-paper);
+  max-width: 1440px;
+  margin-inline: auto;
+  position: relative;
+  /* Subtle depth: makes it look like paper sitting on a surface */
+  box-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.06),
+    0 8px 32px rgba(0, 0, 0, 0.08),
+    0 24px 64px rgba(0, 0, 0, 0.04);
+  /* 1px border for physical definition */
+  outline: 1px solid rgba(26, 20, 15, 0.18);
+}
+
+
+
+
+/* =============================================================================
+   4. HEADINGS
+   ============================================================================= */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--thg-font-display);
+  font-weight: var(--thg-weight-bold);
+  line-height: var(--thg-leading-tight);
+  letter-spacing: var(--thg-tracking-tight);
+  color: var(--thg-color-ink);
+  overflow-wrap: break-word;
+}
+
+h1 { font-size: var(--thg-text-4xl); font-weight: var(--thg-weight-black); }
+h2 { font-size: var(--thg-text-3xl); }
+h3 { font-size: var(--thg-text-2xl); }
+h4 { font-size: var(--thg-text-xl); }
+h5 { font-size: var(--thg-text-lg); }
+h6 { font-size: var(--thg-text-md); font-weight: var(--thg-weight-semibold); }
+
+
+/* =============================================================================
+   5. MASTHEAD TYPOGRAPHY
+   =============================================================================
+   The masthead uses TWO fonts combined:
+   "The" in Pinyon Script (copperplate calligraphic)
+   "Health Gazette" in Playfair Display Black (Didone high-contrast)
+   This creates the ornate, 19th-century newspaper masthead identity. */
+.masthead-the {
+  font-family: var(--thg-font-masthead-script);
+  font-weight: var(--thg-weight-regular);
+  font-size: 0.55em;
+  letter-spacing: 0.02em;
+  display: inline;
+  position: relative;
+  top: -0.05em;
+}
+
+.masthead-name {
+  font-family: var(--thg-font-masthead-display);
+  font-weight: var(--thg-weight-black);
+  font-style: normal;
+  letter-spacing: -0.01em;
+  line-height: var(--thg-leading-tight);
+}
+
+
+/* =============================================================================
+   6. BODY TEXT
+   ============================================================================= */
+p {
+  margin-bottom: var(--thg-space-4);
+  line-height: var(--thg-leading-normal);
+}
+
+.text-lead {
+  font-size: var(--thg-text-md);
+  line-height: var(--thg-leading-relaxed);
+  color: var(--thg-color-ink-soft);
+}
+
+small, .text-small { font-size: var(--thg-text-sm); }
+.text-xs { font-size: var(--thg-text-xs); }
+.text-muted { color: var(--thg-color-muted); }
+
+
+/* =============================================================================
+   7. LINKS
+   ============================================================================= */
+a {
+  color: var(--thg-color-ink);
+  text-decoration: underline;
+  text-decoration-color: var(--thg-color-line);
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
+  transition: color var(--thg-transition-fast), text-decoration-color var(--thg-transition-fast);
+}
+
+a:hover {
+  color: var(--thg-color-red);
+  text-decoration-color: var(--thg-color-red);
+}
+
+a:focus-visible {
+  outline: 2px solid var(--thg-color-red);
+  outline-offset: 2px;
+  border-radius: var(--thg-radius-sm);
+}
+
+
+/* =============================================================================
+   8. IMAGES
+   ============================================================================= */
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+figure { margin: var(--thg-space-8) 0; }
+
+figcaption {
+  font-size: var(--thg-text-sm);
+  color: var(--thg-color-muted);
+  margin-top: var(--thg-space-2);
+  font-style: italic;
+}
+
+
+/* =============================================================================
+   9. EDITORIAL RULES
+   ============================================================================= */
+hr {
+  border: none;
+  border-top: var(--thg-rule-thin) solid var(--thg-color-line);
+  margin: var(--thg-space-8) 0;
+}
+
+.rule-thin { border: none; border-top: var(--thg-rule-thin) solid var(--thg-color-line); }
+.rule-medium { border: none; border-top: var(--thg-rule-medium) solid var(--thg-color-ink); }
+.rule-thick { border: none; border-top: var(--thg-rule-thick) solid var(--thg-color-ink); }
+.rule-heavy { border: none; border-top: var(--thg-rule-heavy) solid var(--thg-color-ink); }
+
+.rule-double {
+  border: none;
+  border-top: var(--thg-rule-medium) solid var(--thg-color-ink);
+  border-bottom: var(--thg-rule-thin) solid var(--thg-color-ink);
+  height: 6px;
+}
+
+.rule-accent {
+  border: none;
+  border-top: var(--thg-rule-thick) solid var(--thg-color-red);
+}
+
+.rule-ornamental {
+  border: none;
+  border-top: var(--thg-rule-thin) solid var(--thg-color-ink);
+  border-bottom: var(--thg-rule-thin) solid var(--thg-color-ink);
+  height: 8px;
+  position: relative;
+}
+
+.rule-ornamental::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  border-top: var(--thg-rule-thin) solid var(--thg-color-ink);
+}
+
+
+/* =============================================================================
+   10. SECTION HEADINGS
+   ============================================================================= */
+.section-heading {
+  font-family: var(--thg-font-display);
+  font-size: var(--thg-text-xl);
+  font-weight: var(--thg-weight-bold);
+  letter-spacing: var(--thg-tracking-tight);
+  color: var(--thg-color-ink);
+  margin-bottom: var(--thg-space-6);
+}
+
+/* Uppercase variant for section labels like FEATURED ARTICLES */
+.section-label {
+  font-family: var(--thg-font-body);
+  font-size: var(--thg-text-xs);
+  font-weight: var(--thg-weight-semibold);
+  letter-spacing: var(--thg-tracking-wider);
+  text-transform: uppercase;
+  color: var(--thg-color-muted);
+}
+
+
+/* =============================================================================
+   11. BUTTONS
+   ============================================================================= */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--thg-space-2);
+  font-family: var(--thg-font-body);
+  font-size: var(--thg-text-sm);
+  font-weight: var(--thg-weight-semibold);
+  text-decoration: none;
+  padding: var(--thg-space-3) var(--thg-space-6);
+  border: var(--thg-rule-medium) solid transparent;
+  border-radius: var(--thg-radius-md);
+  cursor: pointer;
+  transition: all var(--thg-transition-base);
+  line-height: 1;
+}
+
+.btn-primary {
+  background-color: var(--thg-color-red);
+  border-color: var(--thg-color-red);
+  color: #FFFFFF;
+}
+
+.btn-primary:hover {
+  background-color: var(--thg-color-red-hover);
+  border-color: var(--thg-color-red-hover);
+  color: #FFFFFF;
+  text-decoration: none;
+}
+
+.btn-secondary {
+  background-color: transparent;
+  border-color: var(--thg-color-ink);
+  color: var(--thg-color-ink);
+}
+
+.btn-secondary:hover {
+  background-color: var(--thg-color-ink);
+  color: var(--thg-color-paper);
+  text-decoration: none;
+}
+
+.btn-outline-red {
+  background-color: transparent;
+  border-color: var(--thg-color-red);
+  color: var(--thg-color-red);
+}
+
+.btn-outline-red:hover {
+  background-color: var(--thg-color-red);
+  color: #FFFFFF;
+  text-decoration: none;
+}
+
+.btn:focus-visible {
+  outline: 2px solid var(--thg-color-red);
+  outline-offset: 2px;
+}
+
+
+/* =============================================================================
+   12. LAYOUT
+   ============================================================================= */
+.container {
+  width: 100%;
+  max-width: var(--thg-content-max);
+  margin-inline: auto;
+  padding-inline: var(--thg-space-6);
+}
+
+.container-narrow { max-width: var(--thg-content-width); }
+.container-wide { max-width: var(--thg-content-wide); }
+
+.section { padding-block: var(--thg-section-gap); }
+.section-warm { background-color: var(--thg-color-warm); }
+.section-parchment { background-color: var(--thg-color-parchment); }
+
+
+/* =============================================================================
+   13. GRIDS
+   ============================================================================= */
+.editorial-grid {
+  display: grid;
+  gap: var(--thg-gutter);
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 768px) {
+  .editorial-grid { grid-template-columns: 2fr 1fr; }
+}
+
+.grid-3 {
+  display: grid;
+  gap: var(--thg-gutter);
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 640px) {
+  .grid-3 { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (min-width: 1024px) {
+  .grid-3 { grid-template-columns: repeat(3, 1fr); }
+}
+
+.grid-2 {
+  display: grid;
+  gap: var(--thg-gutter);
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 640px) {
+  .grid-2 { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* Homepage main layout: articles (70%) + events sidebar (30%) */
+.home-content-grid {
+  display: grid;
+  gap: var(--thg-space-10);
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 1024px) {
+  .home-content-grid {
+    grid-template-columns: 1fr 320px;
+  }
+}
+
+/* Article page: main (65%) + sidebar (35%) */
+.article-page-grid {
+  display: grid;
+  gap: var(--thg-space-10);
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 1024px) {
+  .article-page-grid {
+    grid-template-columns: 1fr 280px;
+  }
+}
+
+
+/* =============================================================================
+   14. ARTICLE TYPOGRAPHY
+   ============================================================================= */
+.article-body {
+  font-family: var(--thg-font-display);
+  font-size: var(--thg-text-md);
+  line-height: var(--thg-leading-relaxed);
+  max-width: var(--thg-content-width);
+}
+
+.article-body p { margin-bottom: var(--thg-space-6); }
+
+/* Drop cap */
+.article-body > p:first-of-type::first-letter {
+  font-family: var(--thg-font-display);
+  font-weight: var(--thg-weight-black);
+  font-size: 3.5em;
+  float: left;
+  line-height: 0.85;
+  padding-right: var(--thg-space-2);
+  padding-top: var(--thg-space-1);
+  color: var(--thg-color-red);
+}
+
+.article-body h2 {
+  font-size: var(--thg-text-xl);
+  margin-top: var(--thg-space-12);
+  margin-bottom: var(--thg-space-4);
+  padding-top: var(--thg-space-8);
+  border-top: var(--thg-rule-thin) solid var(--thg-color-line);
+}
+
+.article-body h3 {
+  font-size: var(--thg-text-lg);
+  margin-top: var(--thg-space-8);
+  margin-bottom: var(--thg-space-3);
+}
+
+.article-body blockquote {
+  font-family: var(--thg-font-display);
+  font-size: var(--thg-text-xl);
+  font-style: italic;
+  line-height: var(--thg-leading-snug);
+  color: var(--thg-color-ink-soft);
+  border-left: var(--thg-rule-thick) solid var(--thg-color-red);
+  padding-left: var(--thg-space-6);
+  margin: var(--thg-space-10) 0;
+}
+
+.article-body ul, .article-body ol {
+  margin-bottom: var(--thg-space-6);
+  padding-left: var(--thg-space-6);
+}
+
+.article-body ul { list-style: disc; }
+.article-body ol { list-style: decimal; }
+.article-body li { margin-bottom: var(--thg-space-2); }
+
+
+/* =============================================================================
+   15. BYLINE & METADATA
+   ============================================================================= */
+.byline {
+  font-family: var(--thg-font-body);
+  font-size: var(--thg-text-sm);
+  color: var(--thg-color-muted);
+  display: flex;
+  align-items: center;
+  gap: var(--thg-space-2);
+  flex-wrap: wrap;
+}
+
+.byline-author {
+  font-weight: var(--thg-weight-semibold);
+  color: var(--thg-color-ink);
+}
+
+.byline-dot::before {
+  content: '\00B7';
+  margin: 0 var(--thg-space-1);
+  color: var(--thg-color-muted);
+}
+
+
+/* =============================================================================
+   16. BADGES
+   ============================================================================= */
+.badge {
+  display: inline-block;
+  font-family: var(--thg-font-body);
+  font-size: var(--thg-text-xs);
+  font-weight: var(--thg-weight-bold);
+  letter-spacing: var(--thg-tracking-wide);
+  text-transform: uppercase;
+  padding: var(--thg-space-1) var(--thg-space-3);
+  border: 1px solid var(--thg-color-line);
+  border-radius: var(--thg-radius-sm);
+  color: var(--thg-color-muted);
+  line-height: 1;
+}
+
+/* Category-specific badge colors */
+.badge-spotlight {
+  color: var(--thg-color-red);
+  border-color: transparent;
+  padding: 0;
+  font-weight: var(--thg-weight-bold);
+}
+
+.badge-campus {
+  color: var(--thg-color-ink);
+  border-color: transparent;
+  padding: 0;
+  font-weight: var(--thg-weight-bold);
+}
+
+.badge-health {
+  color: var(--thg-color-red);
+  border-color: transparent;
+  padding: 0;
+  font-weight: var(--thg-weight-bold);
+}
+
+/* Event type badges with borders */
+.badge-event {
+  color: var(--thg-color-red);
+  border-color: var(--thg-color-red);
+  border-radius: var(--thg-radius-md);
+}
+
+
+/* =============================================================================
+   17. FORMS
+   ============================================================================= */
+input[type="text"],
+input[type="email"],
+textarea,
+select {
+  font-family: var(--thg-font-body);
+  font-size: var(--thg-text-base);
+  color: var(--thg-color-ink);
+  background-color: var(--thg-color-paper);
+  border: 1px solid var(--thg-color-line);
+  border-radius: var(--thg-radius-md);
+  padding: var(--thg-space-3) var(--thg-space-4);
+  width: 100%;
+  transition: border-color var(--thg-transition-fast);
+}
+
+input[type="text"]:focus,
+input[type="email"]:focus,
+textarea:focus,
+select:focus {
+  outline: none;
+  border-color: var(--thg-color-ink);
+  box-shadow: 0 0 0 2px rgba(26, 26, 26, 0.1);
+}
+
+label {
+  display: block;
+  font-size: var(--thg-text-sm);
+  font-weight: var(--thg-weight-medium);
+  margin-bottom: var(--thg-space-2);
+}
+
+textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+.form-group { margin-bottom: var(--thg-space-6); }
+
+
+/* =============================================================================
+   18. ACCESSIBILITY
+   ============================================================================= */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.skip-link {
+  position: absolute;
+  top: -100%;
+  left: var(--thg-space-4);
+  background: var(--thg-color-ink);
+  color: var(--thg-color-paper);
+  padding: var(--thg-space-2) var(--thg-space-4);
+  z-index: 9999;
+  font-size: var(--thg-text-sm);
+  text-decoration: none;
+  border-radius: var(--thg-radius-md);
+}
+
+.skip-link:focus { top: var(--thg-space-4); }
+
+
+/* =============================================================================
+   19. PRINT STYLES
+   =============================================================================
+   Designed to produce attractive, editorial-quality print output
+   suitable for the physical gazette. */
+@media print {
+  * {
+    background: transparent !important;
+    color: #000 !important;
+    box-shadow: none !important;
+  }
+
+  header, footer, nav, .btn, .skip-link, .no-print {
+    display: none !important;
+  }
+
+  body {
+    font-size: 11pt;
+    line-height: 1.5;
+    max-width: 100%;
+    margin: 0;
+    padding: 0;
+  }
+
+  h1 { font-size: 24pt; }
+  h2 { font-size: 18pt; }
+  h3 { font-size: 14pt; }
+
+  .article-body {
+    font-size: 11pt;
+    max-width: 100%;
+  }
+
+  .article-body a::after {
+    content: ' (' attr(href) ')';
+    font-size: 9pt;
+    color: #666 !important;
+  }
+
+  h1, h2, h3 { page-break-after: avoid; }
+  figure, img { page-break-inside: avoid; }
+
+  .print-header {
+    display: block !important;
+    text-align: center;
+    border-bottom: 2pt solid #000;
+    padding-bottom: 12pt;
+    margin-bottom: 24pt;
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 18pt;
+    font-weight: 900;
+  }
+
+  @page { margin: 2cm; }
+}

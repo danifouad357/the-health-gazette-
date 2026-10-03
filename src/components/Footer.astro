@@ -1,0 +1,402 @@
+---
+/*
+ * =============================================================================
+ * FOOTER — The Health Gazette (Rebuilt v2 — Sept 26)
+ * =============================================================================
+ * STRUCTURE — Two distinct zones:
+ *
+ * ZONE 1 — WARM CONTENT BAND (parchment bg)
+ *   Left (~30%):
+ *     - Line-art globe illustration placeholder
+ *     - "Why The Gazette?" heading
+ *     - Tagline + "Learn more →" link
+ *   Center (~40%):
+ *     - Large EKG heart ornament (red, prominent)
+ *     - OR: "Join the Forum" heading + subtitle + CTA
+ *   Right (~30%):
+ *     - "Join the Forum" heading
+ *     - "Write. Research. Question. Communicate."
+ *     - "Join CRA-SSF →" red button
+ *
+ * ZONE 2 — DARK ANCHOR BAND (#2C2C2C near-black)
+ *   Left:  CRA-SSF + "The Student Scientific Forum" tagline
+ *   Center: ADU CRI logos (placeholders)
+ *   Right: Social icons row + email icon
+ *
+ * This dark band is the visual anchor that grounds the entire page.
+ * Without it, the cream background reads as "washed out."
+ * =============================================================================
+ */
+
+import EKGFlourish from './EKGFlourish.astro';
+import SocialIcons from './SocialIcons.astro';
+import InteractiveGlobe from './InteractiveGlobe.astro';
+import { Image } from 'astro:assets';
+import aduLogo from '@/assets/images/logos/adu-logo.png';
+---
+
+<footer class="site-footer">
+
+  <!-- =========================================================
+       ZONE 1 — WARM CONTENT BAND
+       ========================================================= -->
+  <div class="footer-warm">
+    <!-- Top rule — heavy ink line signals "end of content" -->
+    <div class="footer-top-rule" aria-hidden="true"></div>
+
+    <div class="container footer-warm-grid">
+
+      <!-- LEFT: Why The Gazette + Globe (Side-by-side in one horizontal flex row) -->
+      <div class="footer-col footer-why">
+        <div class="footer-globe-container">
+          <InteractiveGlobe size={110} showCaption={false} />
+        </div>
+        <div class="footer-text-area">
+          <h2 class="footer-heading">Why The Gazette?</h2>
+          <p class="footer-tagline">
+            Bringing science to campus,<br />one issue at a time.
+          </p>
+          <a href="/about/" class="footer-link">
+            Learn more <span aria-hidden="true">→</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- RIGHT: Join the Forum CTA -->
+      <div class="footer-col footer-join">
+        <h2 class="footer-heading">Join the Forum</h2>
+        <p class="footer-tagline">
+          Write. Research. Question.<br />Communicate.
+        </p>
+        <a href="#" class="btn btn-primary footer-cta-btn">
+          Join CRA-SSF <span aria-hidden="true">→</span>
+        </a>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- =========================================================
+       ZONE 2 — DARK ANCHOR BAND
+       =========================================================
+       The visual anchor that grounds the entire page.
+       #2C2C2C near-black. White text. Social icons.
+       ========================================================= -->
+  <div class="footer-dark">
+    <div class="container footer-dark-grid">
+
+      <!-- Left: Forum identity -->
+      <div class="footer-dark-identity">
+        <span class="footer-dark-name">CRA-SSF</span>
+        <span class="footer-dark-tagline">The Student Scientific Forum</span>
+      </div>
+
+      <!-- Center: Institutional logos -->
+      <div class="footer-dark-logos">
+        <div class="footer-logo-placeholder">
+          <span class="logo-abbrev">CRI</span>
+          <span class="logo-full">Cancer Research Institute</span>
+        </div>
+        <div class="footer-logo-divider" aria-hidden="true">·</div>
+        <div class="footer-real-logo">
+          <Image 
+            src={aduLogo} 
+            alt="Abu Dhabi University" 
+            height={40} 
+            quality={90}
+            class="adu-footer-logo"
+          />
+        </div>
+      </div>
+
+      <!-- Right: Social icons -->
+      <div class="footer-dark-social">
+        <SocialIcons size={18} color="#FFFFFF" />
+      </div>
+
+    </div>
+  </div>
+
+</footer>
+
+<style>
+  /* ================================================================
+     ZONE 1 — WARM CONTENT BAND
+     ================================================================ */
+
+  .footer-warm {
+    background-color: var(--thg-color-parchment);
+    margin-top: var(--thg-section-gap);
+  }
+
+  /* Heavy 4px top rule — the "end of content" signal */
+  .footer-top-rule {
+    height: 4px;
+    background-color: var(--thg-color-ink);
+  }
+
+  .footer-warm-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--thg-space-8);
+    padding-block: clamp(2.5rem, 5vw, 4rem);
+    align-items: center;
+  }
+
+  @media (min-width: 900px) {
+    .footer-warm-grid {
+      grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+      justify-content: space-between;
+      gap: clamp(2rem, 5vw, 4.5rem);
+      align-items: center;
+    }
+  }
+
+  /* LEFT: Globe + Text in horizontal flex row */
+  .footer-why {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: clamp(1rem, 2vw, 1.75rem);
+  }
+
+  .footer-globe-container {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .footer-text-area {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .footer-heading {
+    font-family: var(--thg-font-display);
+    font-size: clamp(1.35rem, 2vw, 1.65rem);
+    font-weight: var(--thg-weight-bold);
+    color: var(--thg-color-ink);
+    margin: 0 0 var(--thg-space-2) 0;
+    line-height: 1.15;
+  }
+
+  .footer-tagline {
+    font-size: var(--thg-text-sm);
+    color: var(--thg-color-ink-soft);
+    line-height: 1.45;
+    margin: 0 0 var(--thg-space-3) 0;
+  }
+
+  .footer-link {
+    font-family: var(--thg-font-body);
+    font-size: var(--thg-text-sm);
+    font-weight: var(--thg-weight-semibold);
+    color: var(--thg-color-red);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    transition: transform var(--thg-transition-fast), color var(--thg-transition-fast);
+  }
+
+  .footer-link:hover {
+    text-decoration: underline;
+    transform: translateX(2px);
+  }
+
+  /* CENTER: Heart EKG ornament */
+  .footer-ekg-center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .footer-heart-ekg {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    max-width: 240px;
+  }
+
+  .footer-heart-ekg svg {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  /* RIGHT: Join the Forum CTA */
+  .footer-join {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+  }
+
+  .footer-cta-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    background-color: var(--thg-color-red, #8B1D24);
+    color: #FFFFFF !important;
+    font-family: var(--thg-font-body);
+    font-size: 0.95rem;
+    font-weight: var(--thg-weight-bold);
+    padding: 0.75rem 1.65rem;
+    border-radius: 6px;
+    text-decoration: none;
+    box-shadow: 0 2px 6px rgba(139, 29, 36, 0.25);
+    transition: background-color var(--thg-transition-fast), transform var(--thg-transition-fast), box-shadow var(--thg-transition-fast);
+  }
+
+  .footer-cta-btn:hover {
+    background-color: #72161c;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(139, 29, 36, 0.35);
+  }
+
+  .footer-cta-btn:active {
+    transform: translateY(0);
+  }
+
+  /* ================================================================
+     ZONE 2 — DARK ANCHOR BAND
+     ================================================================ */
+
+  .footer-dark {
+    background-color: var(--thg-color-footer-dark);
+    padding-block: var(--thg-space-5);
+  }
+
+  .footer-dark-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--thg-space-6);
+    align-items: center;
+  }
+
+  @media (min-width: 640px) {
+    .footer-dark-grid {
+      grid-template-columns: auto 1fr auto;
+      gap: var(--thg-space-8);
+    }
+  }
+
+  /* Identity */
+  .footer-dark-identity {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .footer-dark-name {
+    font-family: var(--thg-font-body);
+    font-size: var(--thg-text-sm);
+    font-weight: var(--thg-weight-bold);
+    letter-spacing: var(--thg-tracking-wide);
+    color: #FFFFFF;
+  }
+
+  .footer-dark-tagline {
+    font-size: var(--thg-text-xs);
+    color: rgba(255, 255, 255, 0.5);
+  }
+
+  /* Logos */
+  .footer-dark-logos {
+    display: flex;
+    align-items: center;
+    gap: var(--thg-space-3);
+    justify-content: center;
+  }
+
+  .footer-logo-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1px;
+  }
+
+  .logo-abbrev {
+    font-family: var(--thg-font-body);
+    font-size: var(--thg-text-xs);
+    font-weight: var(--thg-weight-bold);
+    letter-spacing: var(--thg-tracking-wider);
+    color: rgba(255, 255, 255, 0.8);
+  }
+
+  .logo-full {
+    font-size: 0.65rem;
+    color: rgba(255, 255, 255, 0.4);
+    text-align: center;
+  }
+
+  .footer-logo-divider {
+    color: rgba(255, 255, 255, 0.3);
+    font-size: var(--thg-text-lg);
+    padding-inline: var(--thg-space-1);
+  }
+
+  .footer-real-logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .adu-footer-logo {
+    height: 36px;
+    width: auto;
+    object-fit: contain;
+    /* Optional: If the logo is dark text, we might need to invert it for the dark footer */
+    filter: brightness(0) invert(1);
+    opacity: 0.8;
+  }
+
+  /* Social */
+  .footer-dark-social {
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  /* Mobile stacking */
+  @media (max-width: 899px) {
+    .footer-warm-grid {
+      gap: var(--thg-space-8);
+    }
+  }
+
+  @media (max-width: 639px) {
+    .footer-warm-grid,
+    .footer-dark-grid {
+      text-align: center;
+    }
+
+    .footer-why {
+      flex-direction: column;
+      text-align: center;
+      gap: var(--thg-space-4);
+    }
+
+    .footer-join {
+      align-items: center;
+      text-align: center;
+    }
+
+    /* Center the link and button on mobile */
+    .footer-link,
+    .footer-cta-btn {
+      align-self: center;
+    }
+
+    .footer-dark-social {
+      justify-content: center;
+    }
+
+    .footer-dark-logos {
+      flex-wrap: wrap;
+    }
+  }
+</style>

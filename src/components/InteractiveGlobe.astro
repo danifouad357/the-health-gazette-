@@ -1,0 +1,167 @@
+---
+/* 
+ * Interactive 3D-like Wireframe Globe
+ * Uses D3.js to render a crisp vector globe on canvas.
+ */
+
+interface Props {
+  size?: number;
+  showCaption?: boolean;
+  className?: string;
+}
+
+const { size = 320, showCaption = true, className = '' } = Astro.props;
+---
+
+<div class={`globe-wrapper ${className}`} style={`--globe-size: ${size}px;`}>
+  <canvas class="interactive-globe-canvas" width={size} height={size} data-size={size}></canvas>
+  {showCaption && <div class="globe-caption">Interactive Global Network · Drag to Rotate</div>}
+</div>
+
+<style>
+  .globe-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    z-index: 10;
+    width: var(--globe-size);
+    height: var(--globe-size);
+    flex-shrink: 0;
+  }
+  
+  .interactive-globe-canvas {
+    width: 100%;
+    height: auto;
+    cursor: grab;
+    /* Blend mode to make the black ink interact with the paper texture */
+    mix-blend-mode: multiply;
+  }
+  
+  .interactive-globe-canvas:active {
+    cursor: grabbing;
+  }
+  
+  .globe-caption {
+    font-family: var(--thg-font-body);
+    font-size: var(--thg-text-xs);
+    font-weight: var(--thg-weight-bold);
+    letter-spacing: var(--thg-tracking-wider);
+    text-transform: uppercase;
+    color: var(--thg-color-muted);
+    margin-top: var(--thg-space-2);
+    text-align: center;
+  }
+</style>
+
+<script is:inline src="https://d3js.org/d3.v7.min.js"></script>
+<script is:inline src="https://unpkg.com/topojson-client@3"></script>
+<script is:inline>
+  document.addEventListener('DOMContentLoaded', () => {
+    if (!window.d3 || !window.topojson) return;
+    
+    let land = null;
+    let topologyPromise = fetch('https://unpkg.com/world-atlas@2.0.2/countries-110m.json')
+      .then(r => r.json())
+      .then(world => {
+        land = topojson.feature(world, world.objects.land);
+      });
+
+    document.querySelectorAll('.interactive-globe-canvas').forEach(canvas => {
+      const context = canvas.getContext('2d');
+      const width = parseInt(canvas.getAttribute('data-size')) || 320;
+      const height = width;
+      
+      // Setup orthographic projection (true 3D perspective)
+      // Scale dynamically based on canvas size
+      const projection = d3.geoOrthographic()
+        .scale((width / 2) * 0.95)
+        .translate([width / 2, height / 2])
+        .clipAngle(90) // Only show the front hemisphere
+        .precision(0.5);
+        
+      const path = d3.geoPath(projection, context);
+      const graticule = d3.geoGraticule();
+      
+      // Rotation state
+      const sensitivity = 75;
+      let rotation = [0, -15, 0];
+      let isDragging = false;
+      
+      // Draw function
+      function draw() {
+        // Clear the canvas
+        context.clearRect(0, 0, width, height);
+        
+        // Base ink color for the globe
+        const inkColor = '#111111';
+        
+        // 1. Draw graticule (wireframe lat/long lines)
+        context.beginPath();
+        path(graticule());
+        context.strokeStyle = inkColor;
+        context.lineWidth = Math.max(0.4, width / 600);
+        context.globalAlpha = 0.35; // Fainter lines for the wireframe grid
+        context.stroke();
+        context.globalAlpha = 1.0;
+        
+        // 2. Draw solid continents
+        if (land) {
+          context.beginPath();
+          path(land);
+          context.fillStyle = inkColor;
+          context.fill();
+          context.strokeStyle = inkColor;
+          context.lineWidth = Math.max(0.4, width / 600);
+          context.stroke();
+        }
+        
+        // 3. Draw outer globe boundary (the sphere outline)
+        context.beginPath();
+        path({type: 'Sphere'});
+        context.strokeStyle = inkColor;
+        context.lineWidth = Math.max(1, width / 300);
+        context.stroke();
+      }
+      
+      // Auto rotation animation
+      function timerFunc() {
+        if (!isDragging) {
+          rotation[0] += 0.25; // Speed of spin
+          projection.rotate(rotation);
+          draw();
+        }
+      }
+      
+      // Interactive dragging
+      const drag = d3.drag()
+        .on('start', () => { 
+          isDragging = true; 
+        })
+        .on('drag', (event) => {
+          const rotate = projection.rotate();
+          const k = sensitivity / projection.scale();
+          rotation = [
+            rotate[0] + event.dx * k,
+            rotate[1] - event.dy * k
+          ];
+          projection.rotate(rotation);
+          draw();
+        })
+        .on('end', () => { 
+          isDragging = false; 
+        });
+        
+      d3.select(canvas).call(drag);
+      
+      // Initial draw before fetch completes
+      draw();
+      
+      // Start animation loop once data loads
+      topologyPromise.then(() => {
+        d3.timer(timerFunc);
+      });
+    });
+  });
+</script>

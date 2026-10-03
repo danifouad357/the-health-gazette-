@@ -1,0 +1,505 @@
+---
+/*
+ * =============================================================================
+ * HOME PAGE — The Health Gazette (Rebuilt to Match Mockup)
+ * =============================================================================
+ * Structure:
+ *   1. Hero: metadata bar + headline + subtitle + CTAs + issue cover
+ *   2. Content grid: Featured Articles (3 cards) | Upcoming Events (sidebar)
+ *
+ * The hero metadata bar (VOL/ISSUE/MONTH/ADU·CRI) lives HERE, not in the
+ * header, because it's issue-specific content that changes with each issue.
+ * =============================================================================
+ */
+
+import BaseLayout from '@layouts/BaseLayout.astro';
+import EditorialRule from '@components/EditorialRule.astro';
+import { Image } from 'astro:assets';
+import { sanityClient } from "sanity:client";
+import imageUrlBuilder from "@sanity/image-url";
+
+const builder = imageUrlBuilder(sanityClient);
+function urlFor(source) {
+  return builder.image(source);
+}
+
+/* Fetch Site Settings (Announcement Ribbon) */
+const siteSettings = await sanityClient.fetch(`*[_type == "siteSettings"][0]`);
+
+/* Fetch Hero Slides */
+const heroSlides = await sanityClient.fetch(`*[_type == "heroSlide" && active == true] | order(order asc)`);
+const currentHero = heroSlides.length > 0 ? heroSlides[0] : null;
+
+/* Import images for Astro's optimization pipeline (fallback) */
+import issueCover from '@/assets/images/covers/issue-03-october-2026.jpg';
+import imgCancer from '@/assets/images/articles/cancer-cells.jpg';
+import imgLab from '@/assets/images/articles/microscope-lab.jpg';
+import imgRibbon from '@/assets/images/articles/breast-cancer-ribbon.jpg';
+
+/* Placeholder article data — will come from Sanity CMS in Phase 2 */
+const articles = [
+  {
+    category: 'Spotlight',
+    categoryClass: 'badge-spotlight',
+    title: 'How Inflammation Shapes Cancer Progression',
+    author: 'Dr. Aisha Alahkar',
+    readTime: '5 min read',
+    image: imgCancer,
+    href: '#',
+  },
+  {
+    category: 'Campus Research',
+    categoryClass: 'badge-campus',
+    title: 'ADU Students Explore New Frontiers in Oncology',
+    author: 'Sarah Ahmed',
+    readTime: '6 min read',
+    image: imgLab,
+    href: '#',
+  },
+  {
+    category: 'Health & Body',
+    categoryClass: 'badge-health',
+    title: 'Breast Cancer Awareness: What You Need to Know',
+    author: 'Mona Khaled',
+    readTime: '4 min read',
+    image: imgRibbon,
+    href: '#',
+  },
+];
+
+const events = [
+  { month: 'October', items: [
+    { day: '16', title: 'Journal Club', description: 'Details coming soon', badge: 'Journal Club' },
+    { day: '18', title: 'Breast Cancer Awareness Campaign', description: 'Details coming soon', badge: 'Awareness Campaign' },
+  ]},
+  { month: 'November', items: [
+    { day: '07', title: 'Lung Cancer Awareness Expert Talk', description: 'Details coming soon', badge: 'Expert Talk' },
+  ]},
+];
+---
+
+<BaseLayout>
+  <!-- =========================================================================
+       HERO — Latest Issue
+       ========================================================================= -->
+
+  <!-- Metadata bar — issue-specific, sits above the hero content -->
+  <div class="hero-metadata">
+    <div class="container hero-metadata-inner">
+      <span class="hero-meta-item">VOL. 01 · ISSUE 03</span>
+      <span class="hero-meta-item">OCTOBER 2026</span>
+      <span class="hero-meta-item">ADU · CRI</span>
+    </div>
+  </div>
+
+  <section class="hero" aria-label="Latest Issue">
+    {currentHero && currentHero.slideType === 'fullImage' ? (
+      <div class="hero-full-image-container">
+        <img
+          src={urlFor(currentHero.heroImage).width(1920).url()}
+          alt="Hero background"
+          class="hero-full-image"
+        />
+      </div>
+    ) : (
+      <div class="container hero-grid">
+        <!-- Left: Text content -->
+        <div class="hero-text">
+          <p class="hero-label">{currentHero?.overtitle || 'The Latest Issue'}</p>
+          <p class="hero-issue-meta">Issue 03 · October 2026</p>
+          <h2 class="hero-headline">
+            {currentHero?.headline || 'Exploring the Intersection of Cancer, Immunity and Inflammation'}
+          </h2>
+          <p class="hero-subtitle">
+            {currentHero?.subtitle || 'Research, awareness and student voices for a healthier tomorrow.'}
+          </p>
+          <div class="hero-actions">
+            <a href="/gazette/" class="btn btn-primary">
+              Read the Issue <span aria-hidden="true">→</span>
+            </a>
+            <a href="#" class="btn btn-secondary">
+              Download PDF
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true">
+                <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" />
+                <polyline points="7 10 12 15 17 10" />
+                <line x1="12" y1="15" x2="12" y2="3" />
+              </svg>
+            </a>
+          </div>
+        </div>
+
+        <!-- Right: Issue cover -->
+        <div class="hero-cover">
+          {currentHero?.issueCoverImage ? (
+            <img
+              src={urlFor(currentHero.issueCoverImage).width(800).url()}
+              alt="Gazette Cover"
+              class="hero-cover-image"
+            />
+          ) : (
+            <Image
+              src={issueCover}
+              alt="The Health Gazette Issue 03 — October 2026 Cover"
+              width={400}
+              height={533}
+              format="webp"
+              quality={85}
+              class="hero-cover-image"
+            />
+          )}
+        </div>
+      </div>
+    )}
+  </section>
+
+  <!-- Divider -->
+  <div class="container">
+    <EditorialRule variant="thin" />
+  </div>
+
+  <!-- =========================================================================
+       CONTENT GRID — Featured Articles + Upcoming Events
+       ========================================================================= -->
+  <section class="content-section" aria-label="Featured content">
+    <div class="container">
+      <div class="home-content-grid">
+
+        <!-- LEFT: Featured Articles -->
+        <div class="featured-articles">
+          <div class="section-header">
+            <h2 class="section-heading">Featured Articles</h2>
+            <a href="/articles/" class="view-all">
+              View all <span aria-hidden="true">→</span>
+            </a>
+          </div>
+
+          <div class="articles-grid">
+            {articles.map((article) => (
+              <a href={article.href} class="article-card">
+                <div class="article-card-image">
+                  <Image
+                    src={article.image}
+                    alt={article.title}
+                    width={320}
+                    height={200}
+                    format="webp"
+                    quality={80}
+                  />
+                </div>
+                <div class="article-card-body">
+                  <span class:list={['badge', article.categoryClass]}>
+                    {article.category}
+                  </span>
+                  <h3 class="article-card-title">{article.title}</h3>
+                  <div class="byline">
+                    <span>By {article.author}</span>
+                    <span class="byline-dot"></span>
+                    <span>{article.readTime}</span>
+                  </div>
+                </div>
+              </a>
+            ))}
+          </div>
+        </div>
+
+        <!-- RIGHT: Upcoming Events Sidebar -->
+        <aside class="events-sidebar">
+          <div class="section-header">
+            <h2 class="section-heading">Upcoming Events</h2>
+            <a href="/events/" class="view-all">
+              View all <span aria-hidden="true">→</span>
+            </a>
+          </div>
+
+          <div class="events-list">
+            {events.map((group) => (
+              <div class="event-month-group">
+                <p class="event-month-label">{group.month}</p>
+                {group.items.map((event, i) => (
+                  <>
+                    <div class="event-row">
+                      <div class="event-date">
+                        <span class="event-day">{event.day}</span>
+                      </div>
+                      <div class="event-info">
+                        <h4 class="event-title">{event.title}</h4>
+                        <p class="event-desc">{event.description}</p>
+                      </div>
+                    </div>
+                    {i < group.items.length - 1 && (
+                      <div class="rule-thin" style="margin-block: var(--thg-space-3);" />
+                    )}
+                  </>
+                ))}
+              </div>
+            ))}
+          </div>
+        </aside>
+
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  /* ---- HERO METADATA BAR ---- */
+  .hero-metadata {
+    /* Tonal band — slightly darker than the paper surface, visually contained */
+    background-color: var(--thg-color-metadata-band);
+    border-top: 1px solid var(--thg-color-line);
+    border-bottom: 1px solid var(--thg-color-line);
+    padding-block: var(--thg-space-2);
+  }
+
+  .hero-metadata-inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .hero-meta-item {
+    font-family: var(--thg-font-body);
+    font-size: var(--thg-text-xs);
+    font-weight: var(--thg-weight-medium);
+    letter-spacing: var(--thg-tracking-wider);
+    text-transform: uppercase;
+    color: var(--thg-color-muted);
+  }
+
+  /* ---- HERO ---- */
+  .hero {
+    padding-block: var(--thg-space-12) var(--thg-space-10);
+  }
+
+  .hero-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--thg-space-10);
+    align-items: center;
+  }
+
+  @media (min-width: 768px) {
+    .hero-grid {
+      grid-template-columns: 1fr 340px;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .hero-grid {
+      grid-template-columns: 1.3fr 1fr; /* Proportional layout for wide screens */
+      gap: var(--thg-space-16); /* Add more breathing room between columns */
+    }
+  }
+
+  .hero-label {
+    font-family: var(--thg-font-body);
+    font-size: var(--thg-text-xs);
+    font-weight: var(--thg-weight-bold);
+    letter-spacing: var(--thg-tracking-wider);
+    text-transform: uppercase;
+    color: var(--thg-color-red);
+    margin-bottom: var(--thg-space-1);
+  }
+
+  .hero-issue-meta {
+    font-family: var(--thg-font-body);
+    font-size: var(--thg-text-xs);
+    letter-spacing: var(--thg-tracking-wider);
+    text-transform: uppercase;
+    color: var(--thg-color-muted);
+    margin-bottom: var(--thg-space-4);
+  }
+
+  .hero-headline {
+    font-family: var(--thg-font-display);
+    /* Larger and more dramatic — wraps to 4 lines at desktop, like the mockup */
+    font-size: clamp(var(--thg-text-3xl), 4.2vw, 3.4rem);
+    font-weight: var(--thg-weight-black);
+    line-height: var(--thg-leading-tight);
+    letter-spacing: var(--thg-tracking-tight);
+    margin-bottom: var(--thg-space-5);
+    /* Constrain width so headline wraps dramatically — not a single wide line */
+    max-width: 14ch;
+  }
+
+  .hero-subtitle {
+    font-size: var(--thg-text-base);
+    color: var(--thg-color-ink-soft);
+    margin-bottom: var(--thg-space-6);
+    max-width: 42ch;
+    line-height: var(--thg-leading-relaxed);
+  }
+
+  .hero-actions {
+    display: flex;
+    gap: var(--thg-space-4);
+    flex-wrap: wrap;
+  }
+
+  .hero-cover {
+    display: flex;
+    justify-content: center;
+  }
+
+  .hero-cover-image {
+    max-width: 100%;
+    height: auto;
+    box-shadow: var(--thg-shadow-lg);
+  }
+
+  /* ---- CONTENT SECTION ---- */
+  .content-section {
+    padding-block: var(--thg-space-10) var(--thg-space-16);
+  }
+
+  .section-header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: var(--thg-space-6);
+    padding-bottom: var(--thg-space-3);
+    border-bottom: var(--thg-rule-thin) solid var(--thg-color-line);
+  }
+
+  .section-header .section-heading {
+    margin-bottom: 0;
+  }
+
+  .view-all {
+    font-size: var(--thg-text-sm);
+    font-weight: var(--thg-weight-medium);
+    color: var(--thg-color-ink);
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  .view-all:hover {
+    color: var(--thg-color-red);
+  }
+
+  /* ---- ARTICLE CARDS ---- */
+  .articles-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--thg-space-6);
+  }
+
+  @media (max-width: 1023px) {
+    .articles-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (max-width: 639px) {
+    .articles-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .article-card {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+  }
+
+  .article-card:hover .article-card-title {
+    color: var(--thg-color-red);
+  }
+
+  .article-card-image {
+    margin-bottom: var(--thg-space-3);
+    overflow: hidden;
+  }
+
+  .article-card-image img {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 16 / 10;
+    object-fit: cover;
+    transition: transform var(--thg-transition-slow), filter var(--thg-transition-slow);
+    /* Subtle warm editorial tone as requested */
+    filter: sepia(0.2) saturate(1.1) brightness(0.95);
+  }
+
+  .article-card:hover .article-card-image img {
+    transform: scale(1.03);
+    /* Return to original color on hover as requested */
+    filter: none;
+  }
+
+  .article-card-body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--thg-space-2);
+  }
+
+  .article-card-title {
+    font-family: var(--thg-font-display);
+    font-size: var(--thg-text-base);
+    font-weight: var(--thg-weight-bold);
+    line-height: var(--thg-leading-snug);
+    transition: color var(--thg-transition-fast);
+  }
+
+  /* ---- EVENTS SIDEBAR ---- */
+  .events-sidebar {
+    border-left: var(--thg-rule-thin) solid var(--thg-color-line);
+    padding-left: var(--thg-space-8);
+  }
+
+  @media (max-width: 1023px) {
+    .events-sidebar {
+      border-left: none;
+      padding-left: 0;
+      border-top: var(--thg-rule-thin) solid var(--thg-color-line);
+      padding-top: var(--thg-space-8);
+    }
+  }
+
+  .event-month-group {
+    margin-bottom: var(--thg-space-6);
+  }
+
+  .event-month-label {
+    font-family: var(--thg-font-body);
+    font-size: var(--thg-text-xs);
+    font-weight: var(--thg-weight-bold);
+    letter-spacing: var(--thg-tracking-wider);
+    text-transform: uppercase;
+    color: var(--thg-color-ink);
+    margin-bottom: var(--thg-space-3);
+  }
+
+  .event-row {
+    display: flex;
+    gap: var(--thg-space-4);
+    align-items: flex-start;
+  }
+
+  .event-date {
+    flex-shrink: 0;
+    min-width: 40px;
+  }
+
+  .event-day {
+    font-family: var(--thg-font-display);
+    font-size: var(--thg-text-2xl);
+    font-weight: var(--thg-weight-bold);
+    color: var(--thg-color-red);
+    line-height: 1;
+  }
+
+  .event-title {
+    font-family: var(--thg-font-body);
+    font-size: var(--thg-text-sm);
+    font-weight: var(--thg-weight-bold);
+    color: var(--thg-color-ink);
+    margin-bottom: var(--thg-space-1);
+  }
+
+  .event-desc {
+    font-size: var(--thg-text-xs);
+    color: var(--thg-color-muted);
+    margin: 0;
+  }
+</style>

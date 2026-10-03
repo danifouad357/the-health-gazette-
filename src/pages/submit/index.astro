@@ -1,0 +1,278 @@
+---
+/*
+ * =============================================================================
+ * SUBMIT PAGE — The Health Gazette
+ * =============================================================================
+ * Three-column layout:
+ * LEFT: Submission type selector (Article / Puzzles & Games)
+ * CENTER: The actual form (name, email, type, category)
+ * RIGHT: Submission guidelines
+ *
+ * Form is NOT wired to Formspree yet — design only for now.
+ * Multi-step form implied by "Next →" button.
+ * =============================================================================
+ */
+
+import BaseLayout from '@layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="Submit" description="Submit articles, puzzles, and ideas to The Health Gazette.">
+  <section class="submit-page">
+    <div class="container container-wide">
+      <!-- Page header -->
+      <div class="submit-header">
+        <h1 class="submit-title">Submit to The Gazette</h1>
+        <p class="submit-tagline">Have something to say?</p>
+        <p class="submit-description">
+          We're always looking for student articles, puzzles, and ideas.
+          Share your research, your perspective, or your creativity.
+        </p>
+      </div>
+
+      <div class="submit-grid">
+        <!-- LEFT: Type selector -->
+        <div class="submit-types">
+          <button class="type-card active" data-type="article">
+            <div class="type-icon" aria-hidden="true">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--thg-color-red)" stroke-width="1.5" stroke-linecap="round">
+                <path d="M12 20h9M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z" />
+              </svg>
+            </div>
+            <h3 class="type-title">Article</h3>
+            <p class="type-desc">250–400 words</p>
+          </button>
+
+          <button class="type-card" data-type="puzzle">
+            <div class="type-icon" aria-hidden="true">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--thg-color-red)" stroke-width="1.5" stroke-linecap="round">
+                <path d="M14.5 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V7.5L14.5 2z" />
+                <polyline points="14 2 14 8 20 8" />
+                <line x1="9" y1="15" x2="15" y2="15" />
+                <line x1="12" y1="12" x2="12" y2="18" />
+              </svg>
+            </div>
+            <h3 class="type-title">Puzzles & Games</h3>
+            <p class="type-desc">Sudoku, crossword, word search, trivia, maze</p>
+          </button>
+        </div>
+
+        <!-- CENTER: Form -->
+        <div class="submit-form-section">
+          <h2 class="form-heading">Submission Form</h2>
+          <!-- TODO: Wire to Formspree in Phase 2 -->
+          <form class="submit-form" action="#" method="POST">
+            <div class="form-group">
+              <label for="full-name">Full Name <span class="required">*</span></label>
+              <input type="text" id="full-name" name="name" placeholder="Your name" required />
+            </div>
+            <div class="form-group">
+              <label for="email">Email Address <span class="required">*</span></label>
+              <input type="email" id="email" name="email" placeholder="your@email" required />
+            </div>
+            <div class="form-group">
+              <label>Submission Type <span class="required">*</span></label>
+              <div class="radio-group">
+                <label class="radio-label">
+                  <input type="radio" name="type" value="article" checked /> Article
+                </label>
+                <label class="radio-label">
+                  <input type="radio" name="type" value="puzzle" /> Puzzle/Game
+                </label>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="category">Article Category <span class="required">*</span></label>
+              <select id="category" name="category" required>
+                <option value="" disabled selected>Select a category</option>
+                <option value="spotlight">Spotlight</option>
+                <option value="campus-research">Campus Research</option>
+                <option value="health-body">Health & Body</option>
+                <option value="new-at-adu">New at ADU</option>
+                <option value="open-topic">Open Topic</option>
+                <option value="quick-facts">Quick Facts</option>
+              </select>
+            </div>
+            <button type="submit" class="btn btn-primary submit-btn">
+              Next <span aria-hidden="true">→</span>
+            </button>
+          </form>
+        </div>
+
+        <!-- RIGHT: Guidelines -->
+        <div class="submit-guidelines">
+          <h2 class="guidelines-heading">Submission Guidelines</h2>
+          <ul class="guidelines-list">
+            <li>Plain English, no unexplained jargon.</li>
+            <li>Include at least one source/reference for any factual claims.</li>
+            <li>Submit as plain text or a Word doc.</li>
+            <li>Images optional but welcome — must be original or royalty-free.</li>
+            <li>Puzzles must come with an answer key.</li>
+            <li>Add how we should credit you at the end of the submission.</li>
+          </ul>
+          <p class="guidelines-note">
+            No experience required.<br />
+            We'll help you polish anything you submit.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .submit-page {
+    padding-block: var(--thg-space-10) var(--thg-space-16);
+  }
+
+  .submit-header {
+    margin-bottom: var(--thg-space-10);
+  }
+
+  .submit-title {
+    font-family: var(--thg-font-display);
+    font-size: var(--thg-text-3xl);
+    font-weight: var(--thg-weight-bold);
+    margin-bottom: var(--thg-space-2);
+  }
+
+  .submit-tagline {
+    font-family: var(--thg-font-display);
+    font-size: var(--thg-text-md);
+    color: var(--thg-color-ink-soft);
+    margin-bottom: var(--thg-space-2);
+  }
+
+  .submit-description {
+    font-size: var(--thg-text-sm);
+    color: var(--thg-color-muted);
+    max-width: 50ch;
+    margin: 0;
+  }
+
+  /* ---- Three-column grid ---- */
+  .submit-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--thg-space-10);
+  }
+
+  @media (min-width: 1024px) {
+    .submit-grid {
+      grid-template-columns: 200px 1fr 280px;
+    }
+  }
+
+  /* ---- Type selector ---- */
+  .submit-types {
+    display: flex;
+    flex-direction: column;
+    gap: var(--thg-space-4);
+  }
+
+  .type-card {
+    text-align: left;
+    background: var(--thg-color-paper);
+    border: 1px solid var(--thg-color-line);
+    border-radius: var(--thg-radius-md);
+    padding: var(--thg-space-4);
+    cursor: pointer;
+    transition: border-color var(--thg-transition-fast);
+  }
+
+  .type-card:hover, .type-card.active {
+    border-color: var(--thg-color-red);
+  }
+
+  .type-card.active {
+    border-width: 2px;
+  }
+
+  .type-icon {
+    margin-bottom: var(--thg-space-2);
+  }
+
+  .type-title {
+    font-family: var(--thg-font-body);
+    font-size: var(--thg-text-sm);
+    font-weight: var(--thg-weight-bold);
+    margin-bottom: var(--thg-space-1);
+  }
+
+  .type-desc {
+    font-size: var(--thg-text-xs);
+    color: var(--thg-color-muted);
+    margin: 0;
+  }
+
+  /* ---- Form ---- */
+  .form-heading {
+    font-family: var(--thg-font-body);
+    font-size: var(--thg-text-base);
+    font-weight: var(--thg-weight-bold);
+    margin-bottom: var(--thg-space-6);
+    padding-bottom: var(--thg-space-3);
+    border-bottom: var(--thg-rule-thin) solid var(--thg-color-line);
+  }
+
+  .required {
+    color: var(--thg-color-red);
+  }
+
+  .radio-group {
+    display: flex;
+    gap: var(--thg-space-6);
+  }
+
+  .radio-label {
+    display: flex;
+    align-items: center;
+    gap: var(--thg-space-2);
+    font-size: var(--thg-text-sm);
+    cursor: pointer;
+    margin: 0;
+  }
+
+  .submit-btn {
+    width: 100%;
+    justify-content: center;
+    padding-block: var(--thg-space-3);
+    margin-top: var(--thg-space-4);
+  }
+
+  /* ---- Guidelines ---- */
+  .guidelines-heading {
+    font-family: var(--thg-font-body);
+    font-size: var(--thg-text-base);
+    font-weight: var(--thg-weight-bold);
+    margin-bottom: var(--thg-space-4);
+  }
+
+  .guidelines-list {
+    list-style: disc;
+    padding-left: var(--thg-space-5);
+    margin-bottom: var(--thg-space-6);
+  }
+
+  .guidelines-list li {
+    font-size: var(--thg-text-sm);
+    color: var(--thg-color-ink-soft);
+    margin-bottom: var(--thg-space-3);
+    line-height: var(--thg-leading-normal);
+  }
+
+  .guidelines-note {
+    font-size: var(--thg-text-sm);
+    color: var(--thg-color-muted);
+    font-style: italic;
+    margin: 0;
+  }
+
+  @media (max-width: 1023px) {
+    .submit-types {
+      flex-direction: row;
+    }
+    .type-card {
+      flex: 1;
+    }
+  }
+</style>

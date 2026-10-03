@@ -1,0 +1,31 @@
+{
+  "name": "the-health-gazette",
+  "type": "module",
+  "version": "1.0.0",
+  "description": "The Health Gazette — Student Scientific Editorial by CRA-SSF at Abu Dhabi University",
+  "scripts": {
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "@astrojs/react": "^4.4.2",
+    "@gullabs/flipbook-core": "^3.2.2",
+    "@gullabs/react-flipbook": "^3.2.2",
+    "@paper-design/shaders-react": "^0.0.81",
+    "@sanity/astro": "^3.5.1",
+    "@sanity/client": "^7.3.0",
+    "@sanity/image-url": "^1.2.0",
+    "astro": "^5.8.0",
+    "astro-portabletext": "^1.0.1",
+    "groq": "^6.17.0",
+    "pdfjs-dist": "^6.3.289",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.8.0"
+  }
+}

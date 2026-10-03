@@ -1,0 +1,50 @@
+---
+/*
+ * =============================================================================
+ * EDITORIAL RULE — The Health Gazette
+ * =============================================================================
+ * A reusable decorative horizontal rule component.
+ * Newspapers use horizontal rules extensively as visual punctuation.
+ * This component wraps the CSS rule classes with semantic props.
+ *
+ * VARIANTS:
+ *   thin        — subtle divider between related content
+ *   medium      — standard section break
+ *   thick       — major section break
+ *   double      — classic newspaper double line
+ *   accent      — red accent rule (use very sparingly)
+ *   ornamental  — decorative triple-line (masthead/covers only)
+ *
+ * USAGE:
+ *   <EditorialRule />                    <!-- default: thin -->
+ *   <EditorialRule variant="double" />   <!-- classic newspaper -->
+ *   <EditorialRule variant="accent" />   <!-- red accent -->
+ *   <EditorialRule spacing="lg" />       <!-- more vertical space -->
+ * =============================================================================
+ */
+
+interface Props {
+  variant?: 'thin' | 'medium' | 'thick' | 'double' | 'accent' | 'ornamental';
+  /** Vertical spacing around the rule */
+  spacing?: 'sm' | 'md' | 'lg';
+}
+
+const { variant = 'thin', spacing = 'md' } = Astro.props;
+
+/* Map variant to CSS class */
+const ruleClass = `rule-${variant}`;
+
+/* Map spacing to CSS custom property values */
+const spacingMap = {
+  sm: 'var(--thg-space-4)',
+  md: 'var(--thg-space-8)',
+  lg: 'var(--thg-space-12)',
+};
+---
+
+<div
+  class={ruleClass}
+  role="separator"
+  aria-hidden="true"
+  style={`margin-block: ${spacingMap[spacing]};`}
+></div>
