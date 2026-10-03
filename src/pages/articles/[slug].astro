@@ -1,0 +1,266 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+import { sanityClient, queries, urlFor } from '@lib/sanity';
+import { PortableText } from 'astro-portabletext';
+
+export async function getStaticPaths() {
+  const articles = await sanityClient.fetch(`*[_type == "article" && defined(slug.current)] { "slug": slug.current }`);
+  return articles.map((article) => ({
+    params: { slug: article.slug },
+  }));
+}
+
+const { slug } = Astro.params;
+const query = `*[_type == "article" && slug.current == $slug][0] {
+  ...,
+  "author": author->,
+  "category": category->
+}`;
+const article = await sanityClient.fetch(query, { slug });
+
+if (!article) {
+  return Astro.redirect('/404');
+}
+---
+
+<BaseLayout title={`${article.title} | The Health Gazette`}>
+  <article class="article-page">
+    <div class="container container-narrow">
+      <!-- Article Header -->
+      <header class="article-header">
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+          <a href="/">Home</a> &rsaquo; <a href="/articles/">Articles</a> &rsaquo; <span>{article.category?.title || 'Uncategorized'}</span>
+        </nav>
+        
+        {article.category?.title && <span class="badge badge-spotlight">{article.category.title}</span>}
+        <h1 class="article-title">{article.title}</h1>
+        {article.excerpt && <p class="text-lead">{article.excerpt}</p>}
+        
+        <div class="article-author-block">
+          <div class="author-avatar">{article.author?.name ? article.author.name.substring(0, 2).toUpperCase() : 'THG'}</div>
+          <div class="author-meta">
+            <span class="author-name">{article.author?.name || 'Editorial Team'}</span>
+            <span class="author-details">{article.author?.role || 'Contributor'} · {new Date(article.publishedAt || new Date()).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+          </div>
+        </div>
+      </header>
+    </div>
+
+    <!-- Hero Image -->
+    {article.coverImage && (
+      <div class="container">
+        <div class="article-hero-image">
+          <img src={urlFor(article.coverImage).width(1200).url()} alt={article.title} />
+        </div>
+      </div>
+    )}
+
+    <div class="container">
+      <div class="article-page-grid">
+        <!-- LEFT: Main Article Body -->
+        <div class="article-main">
+          <div class="article-body">
+            {article.content ? (
+              <PortableText value={article.content} />
+            ) : (
+              <p>Article content is coming soon.</p>
+            )}
+          </div>
+        </div>
+
+        <!-- RIGHT: Sidebar (Placeholder for future TOC) -->
+        <aside class="article-sidebar">
+          <div class="sidebar-widget sticky-toc">
+            <h3 class="widget-title">Share</h3>
+            <div class="share-buttons">
+              <button onclick="navigator.clipboard.writeText(window.location.href); alert('Link copied!')">Copy Link</button>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </article>
+</BaseLayout>
+
+<style>
+  .article-page {
+    padding-block: var(--thg-space-8) var(--thg-space-16);
+  }
+
+  /* ---- Header ---- */
+  .article-header {
+    margin-bottom: var(--thg-space-8);
+  }
+
+  .breadcrumb {
+    font-size: var(--thg-text-xs);
+    color: var(--thg-color-muted);
+    margin-bottom: var(--thg-space-6);
+  }
+
+  .breadcrumb a {
+    color: var(--thg-color-ink-soft);
+    text-decoration: none;
+  }
+
+  .breadcrumb a:hover {
+    color: var(--thg-color-red);
+    text-decoration: underline;
+  }
+
+  .article-title {
+    margin-top: var(--thg-space-4);
+    margin-bottom: var(--thg-space-4);
+    font-size: clamp(var(--thg-text-3xl), 5vw, var(--thg-text-5xl));
+    line-height: var(--thg-leading-tight);
+    letter-spacing: var(--thg-tracking-tight);
+  }
+
+  .text-lead {
+    font-size: var(--thg-text-lg);
+    color: var(--thg-color-ink-soft);
+    line-height: var(--thg-leading-relaxed);
+    margin-bottom: var(--thg-space-8);
+  }
+
+  /* ---- Author Block ---- */
+  .article-author-block {
+    display: flex;
+    align-items: center;
+    gap: var(--thg-space-4);
+    padding-top: var(--thg-space-6);
+    border-top: var(--thg-rule-thin) solid var(--thg-color-line);
+  }
+
+  .author-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background-color: var(--thg-color-red);
+    color: var(--thg-color-paper);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--thg-font-display);
+    font-size: var(--thg-text-lg);
+    font-weight: var(--thg-weight-bold);
+  }
+
+  .author-meta {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .author-name {
+    font-family: var(--thg-font-body);
+    font-weight: var(--thg-weight-bold);
+    color: var(--thg-color-ink);
+  }
+
+  .author-details {
+    font-size: var(--thg-text-xs);
+    color: var(--thg-color-muted);
+  }
+
+  /* ---- Hero Image ---- */
+  .article-hero-image {
+    margin-bottom: var(--thg-space-12);
+  }
+
+  .article-hero-image img {
+    width: 100%;
+    height: auto;
+    max-height: 600px;
+    object-fit: cover;
+  }
+
+  /* ---- Layout Grid ---- */
+  .article-page-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--thg-space-12);
+  }
+
+  @media (min-width: 992px) {
+    .article-page-grid {
+      grid-template-columns: 3fr 1fr;
+    }
+  }
+
+  /* ---- Sidebar ---- */
+  .article-sidebar {
+    padding-top: var(--thg-space-4);
+  }
+
+  .sidebar-widget {
+    margin-bottom: var(--thg-space-10);
+    padding-bottom: var(--thg-space-6);
+    border-bottom: var(--thg-rule-thin) solid var(--thg-color-line);
+  }
+
+  .sticky-toc {
+    position: sticky;
+    top: 100px; 
+  }
+
+  .widget-title {
+    font-family: var(--thg-font-body);
+    font-size: var(--thg-text-sm);
+    font-weight: var(--thg-weight-bold);
+    letter-spacing: var(--thg-tracking-wider);
+    text-transform: uppercase;
+    color: var(--thg-color-muted);
+    margin-bottom: var(--thg-space-4);
+  }
+
+  .share-buttons button {
+    background: transparent;
+    border: 1px solid var(--thg-color-line);
+    padding: 0.5rem 1rem;
+    font-family: var(--thg-font-body);
+    cursor: pointer;
+    transition: all var(--thg-transition-fast);
+  }
+
+  .share-buttons button:hover {
+    border-color: var(--thg-color-ink);
+  }
+
+  /* ---- Article Body Formatting ---- */
+  .article-body {
+    font-family: var(--thg-font-body);
+    font-size: var(--thg-text-lg);
+    line-height: 1.8;
+    color: var(--thg-color-ink);
+  }
+  .article-body p {
+    margin-bottom: 1.5rem;
+  }
+  .article-body h2 {
+    font-family: var(--thg-font-display);
+    font-size: var(--thg-text-3xl);
+    margin-top: 3rem;
+    margin-bottom: 1rem;
+  }
+  .article-body h3 {
+    font-family: var(--thg-font-display);
+    font-size: var(--thg-text-2xl);
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+  }
+  .article-body blockquote {
+    border-left: 4px solid var(--thg-color-red);
+    padding-left: 1.5rem;
+    margin: 2rem 0;
+    font-style: italic;
+    font-size: 1.25rem;
+    color: var(--thg-color-ink-soft);
+  }
+  .article-body ul, .article-body ol {
+    margin-bottom: 1.5rem;
+    padding-left: 1.5rem;
+  }
+  .article-body li {
+    margin-bottom: 0.5rem;
+  }
+</style>

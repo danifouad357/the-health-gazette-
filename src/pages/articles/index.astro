@@ -1,10 +1,308 @@
 ---
-/* src/pages/articles/index.astro */
 import BaseLayout from '@layouts/BaseLayout.astro';
+import { sanityClient, queries, urlFor } from '@lib/sanity';
+
+// Fetch articles from Sanity
+let rawArticles = [];
+try {
+  rawArticles = await sanityClient.fetch(queries.allArticles);
+} catch (e) {
+  console.error("Error fetching articles:", e);
+}
+
+// Fallback mock data if sanity is empty
+const mockArticles = [
+  { _id: '1', title: 'How Inflammation Shapes Cancer Progression', publishedAt: '2026-10-12', slug: { current: 'example' }, excerpt: 'Recent findings from the university’s biology department reveal how chronic inflammatory responses can inadvertently create a microenvironment conducive to tumor growth.', category: { title: 'Spotlight' }, author: { name: 'Dr. Aisha Alahkar' } },
+  { _id: '2', title: 'The Evolution of Medical AI', publishedAt: '2026-10-10', slug: { current: 'example' }, excerpt: 'Artificial intelligence is changing the way we diagnose and treat complex diseases, offering unprecedented precision in clinical settings.', category: { title: 'Technology' }, author: { name: 'Dr. Samir Khan' } },
+  { _id: '3', title: 'Global Health Initiatives 2027', publishedAt: '2026-10-08', slug: { current: 'example' }, excerpt: 'A comprehensive look at the upcoming global health policies and their expected impact on developing nations.', category: { title: 'Policy' }, author: { name: 'Sarah Jenkins' } },
+  { _id: '4', title: 'Nutrition and Mental Health', publishedAt: '2026-10-05', slug: { current: 'example' }, excerpt: 'Exploring the gut-brain axis and how dietary choices directly influence cognitive function and emotional well-being.', category: { title: 'Wellness' }, author: { name: 'Dr. Emily Chen' } },
+  { _id: '5', title: 'Advances in Genomic Sequencing', publishedAt: '2026-10-01', slug: { current: 'example' }, excerpt: 'New sequencing technologies are making personalized medicine a reality for more patients than ever before.', category: { title: 'Research' }, author: { name: 'Prof. Alan Turing' } }
+];
+
+const articles = rawArticles.length > 0 ? rawArticles : mockArticles;
+
+// Split articles into featured (first 3) and standard (the rest)
+const featuredArticles = articles.slice(0, 3);
+const standardArticles = articles.slice(3);
 ---
-<BaseLayout title="Articles">
+
+<BaseLayout title="Articles | The Health Gazette">
   <div class="container section">
-    <h1>Articles</h1>
-    <p>Index coming soon. Check out the <a href="/articles/example/">example article layout</a>.</p>
+    <header class="page-header text-center">
+      <h1 class="page-title">Articles</h1>
+      <p class="text-lead">Latest research, insights, and perspectives from the medical community.</p>
+    </header>
+
+    <!-- Featured Articles Grid (First 3) -->
+    <section class="featured-articles">
+      <div class="featured-grid">
+        {featuredArticles.map((article, index) => (
+          <a href={`/articles/${article.slug?.current || 'example'}/`} class={`featured-card ${index === 0 ? 'card-large' : 'card-small'}`}>
+            <div class="card-image">
+              {article.coverImage ? (
+                <img src={urlFor(article.coverImage).width(800).height(600).url()} alt={article.title} />
+              ) : (
+                <div class="placeholder-image">THG</div>
+              )}
+            </div>
+            <div class="card-content">
+              {article.category?.title && <span class="badge">{article.category.title}</span>}
+              <h2 class="card-title">{article.title}</h2>
+              <p class="card-excerpt">{article.excerpt}</p>
+              <div class="card-meta">
+                <span class="author">{article.author?.name || 'Editorial Team'}</span>
+                <span class="date">{new Date(article.publishedAt || new Date()).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+              </div>
+            </div>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <!-- Standard Articles List (The rest) -->
+    {standardArticles.length > 0 && (
+      <section class="standard-articles">
+        <h3 class="section-divider"><span>More Articles</span></h3>
+        <div class="articles-list">
+          {standardArticles.map((article) => (
+            <a href={`/articles/${article.slug?.current || 'example'}/`} class="list-item">
+              <div class="list-image">
+                {article.coverImage ? (
+                  <img src={urlFor(article.coverImage).width(300).height(300).url()} alt={article.title} />
+                ) : (
+                  <div class="placeholder-image">THG</div>
+                )}
+              </div>
+              <div class="list-content">
+                {article.category?.title && <span class="badge badge-outline">{article.category.title}</span>}
+                <h3 class="list-title">{article.title}</h3>
+                <p class="list-excerpt">{article.excerpt}</p>
+                <div class="list-meta">
+                  <span class="author">{article.author?.name || 'Editorial Team'}</span>
+                  <span class="date">{new Date(article.publishedAt || new Date()).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+                </div>
+              </div>
+            </a>
+          ))}
+        </div>
+      </section>
+    )}
   </div>
 </BaseLayout>
+
+<style>
+  /* --- Page Header --- */
+  .page-header {
+    margin-bottom: var(--thg-space-12);
+  }
+  
+  .page-title {
+    font-size: var(--thg-text-5xl);
+    margin-bottom: var(--thg-space-4);
+  }
+
+  /* --- Featured Grid --- */
+  .featured-articles {
+    margin-bottom: var(--thg-space-16);
+  }
+
+  .featured-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--thg-space-8);
+  }
+
+  @media (min-width: 992px) {
+    .featured-grid {
+      grid-template-columns: 2fr 1fr;
+      grid-template-rows: auto auto;
+    }
+    
+    .card-large {
+      grid-column: 1 / 2;
+      grid-row: 1 / 3;
+    }
+  }
+
+  .featured-card {
+    display: flex;
+    flex-direction: column;
+    text-decoration: none;
+    color: inherit;
+    background: var(--thg-color-paper-dim);
+    border: var(--thg-rule-thin) solid var(--thg-color-line);
+    transition: transform var(--thg-transition-fast), box-shadow var(--thg-transition-fast);
+    overflow: hidden;
+  }
+
+  .featured-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px rgba(0,0,0,0.08);
+    border-color: var(--thg-color-red);
+  }
+
+  .card-image {
+    aspect-ratio: 16/9;
+    overflow: hidden;
+    background: var(--thg-color-ink-soft);
+  }
+
+  .card-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+  }
+
+  .featured-card:hover .card-image img {
+    transform: scale(1.05);
+  }
+
+  .placeholder-image {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--thg-font-display);
+    font-size: var(--thg-text-3xl);
+    color: var(--thg-color-paper);
+    opacity: 0.5;
+  }
+
+  .card-content {
+    padding: var(--thg-space-6);
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+  }
+
+  .card-title {
+    font-size: var(--thg-text-2xl);
+    margin-top: var(--thg-space-3);
+    margin-bottom: var(--thg-space-2);
+    line-height: var(--thg-leading-tight);
+  }
+
+  .card-large .card-title {
+    font-size: var(--thg-text-4xl);
+  }
+
+  .card-excerpt {
+    color: var(--thg-color-ink-soft);
+    margin-bottom: var(--thg-space-6);
+    flex-grow: 1;
+  }
+
+  .card-meta, .list-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: var(--thg-text-xs);
+    color: var(--thg-color-muted);
+    padding-top: var(--thg-space-4);
+    border-top: var(--thg-rule-thin) solid var(--thg-color-line);
+  }
+
+  .author {
+    font-weight: var(--thg-weight-bold);
+    color: var(--thg-color-ink);
+  }
+
+  /* --- Standard List --- */
+  .section-divider {
+    text-align: center;
+    position: relative;
+    margin-bottom: var(--thg-space-8);
+  }
+
+  .section-divider::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    border-top: var(--thg-rule-thin) solid var(--thg-color-line);
+    z-index: 1;
+  }
+
+  .section-divider span {
+    position: relative;
+    z-index: 2;
+    background: var(--thg-color-paper);
+    padding: 0 var(--thg-space-4);
+    font-family: var(--thg-font-display);
+    font-size: var(--thg-text-xl);
+  }
+
+  .articles-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--thg-space-6);
+  }
+
+  .list-item {
+    display: flex;
+    flex-direction: column;
+    gap: var(--thg-space-6);
+    text-decoration: none;
+    color: inherit;
+    padding-bottom: var(--thg-space-6);
+    border-bottom: var(--thg-rule-thin) solid var(--thg-color-line);
+    transition: transform var(--thg-transition-fast);
+  }
+
+  @media (min-width: 768px) {
+    .list-item {
+      flex-direction: row;
+      align-items: center;
+    }
+  }
+
+  .list-item:hover {
+    transform: translateX(8px);
+  }
+
+  .list-item:hover .list-title {
+    color: var(--thg-color-red);
+  }
+
+  .list-image {
+    width: 100%;
+    aspect-ratio: 16/9;
+    flex-shrink: 0;
+    background: var(--thg-color-ink-soft);
+    overflow: hidden;
+  }
+
+  @media (min-width: 768px) {
+    .list-image {
+      width: 240px;
+      aspect-ratio: 1; /* Square thumbnail for lists */
+    }
+  }
+
+  .list-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .list-content {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .list-title {
+    font-size: var(--thg-text-xl);
+    margin-top: var(--thg-space-2);
+    margin-bottom: var(--thg-space-2);
+    transition: color var(--thg-transition-fast);
+  }
+
+  .list-excerpt {
+    color: var(--thg-color-ink-soft);
+    margin-bottom: var(--thg-space-4);
+  }
+</style>

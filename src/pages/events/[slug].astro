@@ -1,0 +1,195 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+import { sanityClient, queries, urlFor } from '@lib/sanity';
+import { PortableText } from 'astro-portabletext';
+
+export async function getStaticPaths() {
+  const events = await sanityClient.fetch(`*[_type == "event" && defined(slug.current)] { "slug": slug.current }`);
+  return events.map((event) => ({
+    params: { slug: event.slug },
+  }));
+}
+
+const { slug } = Astro.params;
+const query = `*[_type == "event" && slug.current == $slug][0]`;
+const event = await sanityClient.fetch(query, { slug });
+
+if (!event) {
+  return Astro.redirect('/404');
+}
+---
+
+<BaseLayout title={`${event.title} | The Health Gazette Events`}>
+  <div class="container section">
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+      <a href="/">Home</a> &rsaquo; <span>Events</span> &rsaquo; <span>{event.title}</span>
+    </nav>
+    
+    <div class="event-grid">
+      <div class="event-main">
+        {event.coverImage && (
+          <div class="event-image">
+            <img src={urlFor(event.coverImage).width(800).height(450).url()} alt={event.title} />
+          </div>
+        )}
+        <h1 class="event-title">{event.title}</h1>
+        <div class="event-body">
+          {event.description ? (
+            <PortableText value={event.description} />
+          ) : (
+            <p>Details coming soon.</p>
+          )}
+        </div>
+      </div>
+      
+      <aside class="event-sidebar">
+        <div class="event-details-card">
+          <h3 class="card-title">Event Details</h3>
+          <ul class="details-list">
+            <li>
+              <strong>Date & Time</strong>
+              <span>{new Date(event.date).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</span>
+              <span>{new Date(event.date).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}</span>
+            </li>
+            {event.location && (
+              <li>
+                <strong>Location</strong>
+                <span>{event.location}</span>
+              </li>
+            )}
+            {event.registrationLink && (
+              <li>
+                <a href={event.registrationLink} target="_blank" rel="noopener noreferrer" class="btn btn-primary">Register Now</a>
+              </li>
+            )}
+          </ul>
+        </div>
+      </aside>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .breadcrumb {
+    font-size: var(--thg-text-xs);
+    color: var(--thg-color-muted);
+    margin-bottom: var(--thg-space-8);
+  }
+
+  .breadcrumb a {
+    color: var(--thg-color-ink-soft);
+    text-decoration: none;
+  }
+
+  .breadcrumb a:hover {
+    color: var(--thg-color-red);
+    text-decoration: underline;
+  }
+
+  .event-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--thg-space-12);
+  }
+
+  @media (min-width: 992px) {
+    .event-grid {
+      grid-template-columns: 2fr 1fr;
+    }
+  }
+
+  .event-image {
+    margin-bottom: var(--thg-space-8);
+  }
+
+  .event-image img {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+  }
+
+  .event-title {
+    font-size: clamp(var(--thg-text-3xl), 5vw, var(--thg-text-5xl));
+    margin-bottom: var(--thg-space-6);
+    line-height: var(--thg-leading-tight);
+  }
+
+  .event-body {
+    font-family: var(--thg-font-body);
+    font-size: var(--thg-text-lg);
+    line-height: 1.8;
+    color: var(--thg-color-ink);
+  }
+  
+  .event-body p {
+    margin-bottom: 1.5rem;
+  }
+
+  .event-details-card {
+    background: var(--thg-color-paper-dim);
+    border: var(--thg-rule-thin) solid var(--thg-color-line);
+    padding: var(--thg-space-6);
+    position: sticky;
+    top: 100px;
+  }
+
+  .card-title {
+    font-family: var(--thg-font-display);
+    font-size: var(--thg-text-xl);
+    margin-bottom: var(--thg-space-6);
+    padding-bottom: var(--thg-space-4);
+    border-bottom: var(--thg-rule-thin) solid var(--thg-color-line);
+  }
+
+  .details-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--thg-space-6);
+  }
+
+  .details-list li {
+    display: flex;
+    flex-direction: column;
+    gap: var(--thg-space-2);
+  }
+
+  .details-list strong {
+    font-family: var(--thg-font-display);
+    color: var(--thg-color-ink);
+    text-transform: uppercase;
+    font-size: var(--thg-text-xs);
+    letter-spacing: var(--thg-tracking-wider);
+  }
+
+  .details-list span {
+    color: var(--thg-color-ink-soft);
+    font-family: var(--thg-font-body);
+  }
+
+  .btn {
+    display: inline-block;
+    padding: var(--thg-space-3) var(--thg-space-6);
+    font-family: var(--thg-font-display);
+    text-transform: uppercase;
+    text-decoration: none;
+    text-align: center;
+    font-weight: var(--thg-weight-bold);
+    letter-spacing: var(--thg-tracking-wider);
+    transition: all var(--thg-transition-fast);
+    margin-top: var(--thg-space-4);
+  }
+
+  .btn-primary {
+    background: var(--thg-color-red);
+    color: var(--thg-color-paper);
+    border: 1px solid var(--thg-color-red);
+  }
+
+  .btn-primary:hover {
+    background: transparent;
+    color: var(--thg-color-red);
+  }
+</style
