@@ -1,22 +1,8 @@
 ---
-/*
- * =============================================================================
- * SUBMIT PAGE — The Health Gazette
- * =============================================================================
- * Three-column layout:
- * LEFT: Submission type selector (Article / Puzzles & Games)
- * CENTER: The actual form (name, email, type, category)
- * RIGHT: Submission guidelines
- *
- * Form is NOT wired to Formspree yet — design only for now.
- * Multi-step form implied by "Next →" button.
- * =============================================================================
- */
-
 import BaseLayout from '@layouts/BaseLayout.astro';
 ---
 
-<BaseLayout title="Submit" description="Submit articles, puzzles, and ideas to The Health Gazette.">
+<BaseLayout title="Submit" description="Submit articles, puzzles, abstracts, and ideas to The Health Gazette.">
   <section class="submit-page">
     <div class="container container-wide">
       <!-- Page header -->
@@ -24,17 +10,17 @@ import BaseLayout from '@layouts/BaseLayout.astro';
         <h1 class="submit-title">Submit to The Gazette</h1>
         <p class="submit-tagline">Have something to say?</p>
         <p class="submit-description">
-          We're always looking for student articles, puzzles, and ideas.
+          We're always looking for student articles, puzzles, abstracts, and ideas.
           Share your research, your perspective, or your creativity.
         </p>
       </div>
 
       <div class="submit-grid">
-        <!-- LEFT: Type selector -->
-        <div class="submit-types">
-          <button class="type-card active" data-type="article">
+        <!-- LEFT: Type selector (Acts as Radio Buttons) -->
+        <div class="submit-types" id="type-selector">
+          <button type="button" class="type-card active" data-type="Article">
             <div class="type-icon" aria-hidden="true">
-              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--thg-color-red)" stroke-width="1.5" stroke-linecap="round">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--thg-color-red)" stroke-width="1.5" stroke-linecap="round">
                 <path d="M12 20h9M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z" />
               </svg>
             </div>
@@ -42,9 +28,20 @@ import BaseLayout from '@layouts/BaseLayout.astro';
             <p class="type-desc">250–400 words</p>
           </button>
 
-          <button class="type-card" data-type="puzzle">
+          <button type="button" class="type-card" data-type="Abstract">
             <div class="type-icon" aria-hidden="true">
-              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--thg-color-red)" stroke-width="1.5" stroke-linecap="round">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--thg-color-red)" stroke-width="1.5" stroke-linecap="round">
+                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+              </svg>
+            </div>
+            <h3 class="type-title">Abstract</h3>
+            <p class="type-desc">Research summary</p>
+          </button>
+
+          <button type="button" class="type-card" data-type="Puzzle & Games">
+            <div class="type-icon" aria-hidden="true">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--thg-color-red)" stroke-width="1.5" stroke-linecap="round">
                 <path d="M14.5 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V7.5L14.5 2z" />
                 <polyline points="14 2 14 8 20 8" />
                 <line x1="9" y1="15" x2="15" y2="15" />
@@ -52,41 +49,46 @@ import BaseLayout from '@layouts/BaseLayout.astro';
               </svg>
             </div>
             <h3 class="type-title">Puzzles & Games</h3>
-            <p class="type-desc">Sudoku, crossword, word search, trivia, maze</p>
+            <p class="type-desc">Sudoku, crossword, trivia</p>
+          </button>
+
+          <button type="button" class="type-card" data-type="Other Idea">
+            <div class="type-icon" aria-hidden="true">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--thg-color-red)" stroke-width="1.5" stroke-linecap="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="16" x2="12" y2="12"></line>
+                <line x1="12" y1="8" x2="12.01" y2="8"></line>
+              </svg>
+            </div>
+            <h3 class="type-title">Other Idea</h3>
+            <p class="type-desc">Comic, photography, op-ed</p>
           </button>
         </div>
 
         <!-- CENTER: Form -->
         <div class="submit-form-section">
           <h2 class="form-heading">Submission Form</h2>
-          <!-- Wired to Web3Forms (Drop your Access Key in the input below) -->
+          <!-- Wired to Web3Forms -->
           <form class="submit-form" action="https://api.web3forms.com/submit" method="POST">
             <input type="hidden" name="access_key" value="ae254aae-d72f-4b44-9c51-1e5175b1fd02" />
             <input type="hidden" name="subject" value="New Submission for The Health Gazette" />
             <input type="hidden" name="redirect" value="https://web3forms.com/success" />
+            <!-- Hidden input that takes its value from the left sidebar selection -->
+            <input type="hidden" name="Submission_Type" id="hidden-type" value="Article" />
             
             <div class="form-group">
               <label for="full-name">Full Name <span class="required">*</span></label>
               <input type="text" id="full-name" name="name" placeholder="Your name" required />
             </div>
+            
             <div class="form-group">
               <label for="email">Email Address <span class="required">*</span></label>
-              <input type="email" id="email" name="email" placeholder="your@email" required />
+              <input type="email" id="email" name="email" placeholder="your@email.com" required />
             </div>
-            <div class="form-group">
-              <label>Submission Type <span class="required">*</span></label>
-              <div class="radio-group">
-                <label class="radio-label">
-                  <input type="radio" name="type" value="article" checked /> Article
-                </label>
-                <label class="radio-label">
-                  <input type="radio" name="type" value="puzzle" /> Puzzle/Game
-                </label>
-              </div>
-            </div>
-            <div class="form-group">
-              <label for="category">Article Category <span class="required">*</span></label>
-              <select id="category" name="category" required>
+
+            <div class="form-group" id="category-group">
+              <label for="category">Category <span class="required">*</span></label>
+              <select id="category" name="Article_Category" required>
                 <option value="" disabled selected>Select a category</option>
                 <option value="spotlight">Spotlight</option>
                 <option value="campus-research">Campus Research</option>
@@ -96,11 +98,18 @@ import BaseLayout from '@layouts/BaseLayout.astro';
                 <option value="quick-facts">Quick Facts</option>
               </select>
             </div>
+            
             <div class="form-group">
               <label for="doc-link">Document Link (Google Drive / OneDrive) <span class="required">*</span></label>
               <input type="url" id="doc-link" name="document_link" placeholder="https://..." required />
-              <small style="color: var(--thg-color-muted); font-size: 0.75rem; margin-top: 0.25rem; display: block;">Please ensure the link is set to "Anyone with the link can view".</small>
+              <small class="form-help">Please ensure the link is set to "Anyone with the link can view".</small>
             </div>
+
+            <div class="form-group">
+              <label for="message">Additional Notes (Optional)</label>
+              <textarea id="message" name="message" rows="3" placeholder="Tell us a bit about this submission..."></textarea>
+            </div>
+
             <button type="submit" class="btn btn-primary submit-btn">
               Submit <span aria-hidden="true">→</span>
             </button>
@@ -127,6 +136,39 @@ import BaseLayout from '@layouts/BaseLayout.astro';
     </div>
   </section>
 </BaseLayout>
+
+<script>
+  // Handle client-side form logic
+  document.addEventListener('DOMContentLoaded', () => {
+    const typeCards = document.querySelectorAll('.type-card');
+    const hiddenTypeInput = document.getElementById('hidden-type') as HTMLInputElement;
+    const categoryGroup = document.getElementById('category-group');
+    const categorySelect = document.getElementById('category') as HTMLSelectElement;
+
+    typeCards.forEach(card => {
+      card.addEventListener('click', () => {
+        // Update active class
+        typeCards.forEach(c => c.classList.remove('active'));
+        card.classList.add('active');
+
+        // Update hidden input value
+        const selectedType = card.getAttribute('data-type');
+        if (selectedType && hiddenTypeInput) {
+          hiddenTypeInput.value = selectedType;
+        }
+
+        // Toggle category required/visibility based on type
+        if (selectedType === 'Puzzle & Games' || selectedType === 'Other Idea') {
+          if (categoryGroup) categoryGroup.style.display = 'none';
+          if (categorySelect) categorySelect.removeAttribute('required');
+        } else {
+          if (categoryGroup) categoryGroup.style.display = 'block';
+          if (categorySelect) categorySelect.setAttribute('required', 'true');
+        }
+      });
+    });
+  });
+</script>
 
 <style>
   .submit-page {
@@ -167,7 +209,7 @@ import BaseLayout from '@layouts/BaseLayout.astro';
 
   @media (min-width: 1024px) {
     .submit-grid {
-      grid-template-columns: 200px 1fr 280px;
+      grid-template-columns: 220px 1fr 280px;
     }
   }
 
@@ -178,6 +220,17 @@ import BaseLayout from '@layouts/BaseLayout.astro';
     gap: var(--thg-space-4);
   }
 
+  @media (max-width: 1023px) {
+    .submit-types {
+      flex-direction: row;
+      flex-wrap: wrap;
+    }
+    .type-card {
+      flex: 1;
+      min-width: calc(50% - var(--thg-space-4));
+    }
+  }
+
   .type-card {
     text-align: left;
     background: var(--thg-color-paper);
@@ -185,15 +238,21 @@ import BaseLayout from '@layouts/BaseLayout.astro';
     border-radius: var(--thg-radius-md);
     padding: var(--thg-space-4);
     cursor: pointer;
-    transition: border-color var(--thg-transition-fast);
+    transition: all var(--thg-transition-fast);
+    color: inherit;
+    font: inherit;
   }
 
-  .type-card:hover, .type-card.active {
+  .type-card:hover {
     border-color: var(--thg-color-red);
+    background: var(--thg-color-paper-dim);
   }
 
   .type-card.active {
+    border-color: var(--thg-color-red);
     border-width: 2px;
+    background: var(--thg-color-paper-dim);
+    box-shadow: 0 4px 12px rgba(186, 31, 36, 0.1);
   }
 
   .type-icon {
@@ -205,6 +264,7 @@ import BaseLayout from '@layouts/BaseLayout.astro';
     font-size: var(--thg-text-sm);
     font-weight: var(--thg-weight-bold);
     margin-bottom: var(--thg-space-1);
+    color: var(--thg-color-ink);
   }
 
   .type-desc {
@@ -227,28 +287,76 @@ import BaseLayout from '@layouts/BaseLayout.astro';
     color: var(--thg-color-red);
   }
 
-  .radio-group {
-    display: flex;
-    gap: var(--thg-space-6);
+  .form-group {
+    margin-bottom: var(--thg-space-5);
   }
 
-  .radio-label {
-    display: flex;
-    align-items: center;
-    gap: var(--thg-space-2);
+  .form-group label {
+    display: block;
+    font-family: var(--thg-font-body);
     font-size: var(--thg-text-sm);
-    cursor: pointer;
-    margin: 0;
+    font-weight: var(--thg-weight-bold);
+    margin-bottom: var(--thg-space-2);
+    color: var(--thg-color-ink);
+  }
+
+  .form-group input, 
+  .form-group select, 
+  .form-group textarea {
+    width: 100%;
+    padding: var(--thg-space-3);
+    border: 1px solid var(--thg-color-line);
+    border-radius: var(--thg-radius-sm);
+    font-family: var(--thg-font-body);
+    font-size: var(--thg-text-base);
+    background: var(--thg-color-paper);
+    color: var(--thg-color-ink);
+    transition: border-color var(--thg-transition-fast);
+  }
+
+  .form-group input:focus, 
+  .form-group select:focus, 
+  .form-group textarea:focus {
+    outline: none;
+    border-color: var(--thg-color-red);
+  }
+
+  .form-help {
+    color: var(--thg-color-muted);
+    font-size: 0.75rem;
+    margin-top: 0.25rem;
+    display: block;
   }
 
   .submit-btn {
     width: 100%;
     justify-content: center;
     padding-block: var(--thg-space-3);
-    margin-top: var(--thg-space-4);
+    margin-top: var(--thg-space-2);
+    background: var(--thg-color-red);
+    color: var(--thg-color-paper);
+    border: none;
+    font-family: var(--thg-font-display);
+    text-transform: uppercase;
+    font-weight: var(--thg-weight-bold);
+    letter-spacing: var(--thg-tracking-wider);
+    cursor: pointer;
+    transition: opacity var(--thg-transition-fast);
+    border-radius: var(--thg-radius-sm);
+  }
+  
+  .submit-btn:hover {
+    opacity: 0.9;
   }
 
   /* ---- Guidelines ---- */
+  .submit-guidelines {
+    background: var(--thg-color-paper-dim);
+    padding: var(--thg-space-6);
+    border: 1px solid var(--thg-color-line);
+    border-radius: var(--thg-radius-md);
+  }
+
   .guidelines-heading {
     font-family: var(--thg-font-body);
     font-size: var(--thg-text-base);
@@ -274,14 +382,5 @@ import BaseLayout from '@layouts/BaseLayout.astro';
     color: var(--thg-color-muted);
     font-style: italic;
     margin: 0;
-  }
-
-  @media (max-width: 1023px) {
-    .submit-types {
-      flex-direction: row;
-    }
-    .type-card {
-      flex: 1;
-    }
   }
 </style>
