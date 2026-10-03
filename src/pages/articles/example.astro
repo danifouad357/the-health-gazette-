@@ -66,23 +66,23 @@ import imgCancer from '@/assets/images/articles/cancer-cells.jpg';
           </div>
         </div>
 
-        <!-- RIGHT: Sidebar (TOC + References) -->
+        <!-- RIGHT: Sidebar (References + TOC) -->
         <aside class="article-sidebar">
-          <!-- Table of Contents -->
-          <div class="sidebar-widget sticky-toc">
-            <h3 class="widget-title">In this article</h3>
-            <ol class="toc-list">
-              <li><a href="#the-cellular-mechanisms">01. The Cellular Mechanisms</a></li>
-              <li><a href="#implications">02. Implications for Treatment</a></li>
-            </ol>
-          </div>
-          
           <!-- References -->
           <div class="sidebar-widget references-widget">
             <h3 class="widget-title">References</h3>
             <ol class="references-list">
               <li>Hanahan D, Weinberg RA. Hallmarks of cancer: the next generation. <em>Cell</em>. 2011;144(5):646-674.</li>
               <li>Coussens LM, Werb Z. Inflammation and cancer. <em>Nature</em>. 2002;420(6917):860-867.</li>
+            </ol>
+          </div>
+
+          <!-- Table of Contents -->
+          <div class="sidebar-widget sticky-toc">
+            <h3 class="widget-title toc-title">In this article</h3>
+            <ol class="toc-list">
+              <li><a href="#the-cellular-mechanisms">01. The Cellular Mechanisms</a></li>
+              <li><a href="#implications">02. Implications for Treatment</a></li>
             </ol>
           </div>
         </aside>
@@ -208,6 +208,10 @@ import imgCancer from '@/assets/images/articles/cancer-cells.jpg';
     text-transform: uppercase;
     color: var(--thg-color-muted);
     margin-bottom: var(--thg-space-4);
+  }
+  
+  .toc-title {
+    color: var(--thg-color-red);
   }
 
   .toc-list, .references-list {
